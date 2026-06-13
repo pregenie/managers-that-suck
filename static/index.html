@@ -1,0 +1,1464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Managers That Suck — search any manager. See the data. Watch them improve.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Albert+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#FAF7F1;
+  --card:#FFFFFF;
+  --ink:#23262E;
+  --soft:#6B7280;
+  --line:#E9E3D8;
+  --red:#E2474B;
+  --red-wash:#FCEAE9;
+  --green:#149E7A;
+  --green-wash:#E0F3EC;
+  --amber:#F0B429;
+  --amber-wash:#FBF0D7;
+  --display:'Bricolage Grotesque','Arial Black',sans-serif;
+  --body:'Albert Sans',-apple-system,sans-serif;
+  --mono:'IBM Plex Mono',Menlo,monospace;
+  --sh-sm:0 1px 2px rgba(35,38,46,.06),0 2px 8px rgba(35,38,46,.05);
+  --sh-md:0 2px 4px rgba(35,38,46,.05),0 12px 32px rgba(35,38,46,.10);
+  --r:18px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--paper);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+::selection{background:var(--amber);color:var(--ink)}
+a{color:inherit}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+:focus-visible{outline:3px solid var(--amber);outline-offset:2px;border-radius:6px}
+.mono{font-family:var(--mono)}
+.hide{display:none!important}
+
+/* ============ top bar ============ */
+.topbar{position:fixed;top:0;left:0;right:0;z-index:90;background:rgba(250,247,241,.86);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.topbar-in{max-width:1200px;margin:0 auto;padding:10px 20px;display:flex;align-items:center;gap:16px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;flex-shrink:0}
+.brand svg{display:block}
+.brand-word{font-family:var(--display);font-weight:800;font-size:1rem;line-height:.92;letter-spacing:-.01em}
+.brand-word em{font-style:normal;color:var(--red)}
+.topsearch{flex:1;max-width:430px;position:relative;margin-left:8px}
+.topsearch input{width:100%;height:42px;border:1.5px solid var(--line);border-radius:12px;background:var(--card);padding:0 14px 0 38px;font-family:var(--body);font-size:.94rem;color:var(--ink);box-shadow:var(--sh-sm);transition:border-color .15s,box-shadow .15s}
+.topsearch input:focus{outline:none;border-color:var(--ink);box-shadow:var(--sh-md)}
+.topsearch .mag{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--soft);pointer-events:none}
+.topsearch kbd{position:absolute;right:11px;top:50%;transform:translateY(-50%);font-family:var(--mono);font-size:.66rem;color:var(--soft);border:1px solid var(--line);border-radius:5px;padding:2px 6px;background:var(--paper)}
+.topnav{display:flex;gap:6px;margin-left:auto;align-items:center}
+.tlink{font-weight:600;font-size:.88rem;color:var(--soft);text-decoration:none;padding:8px 12px;border-radius:10px;transition:all .15s}
+.tlink:hover{color:var(--ink);background:rgba(35,38,46,.05)}
+.btn{display:inline-flex;align-items:center;gap:8px;font-weight:700;font-size:.9rem;text-decoration:none;border-radius:12px;padding:10px 18px;background:var(--ink);color:#fff;box-shadow:var(--sh-sm);transition:transform .12s,box-shadow .12s,background .12s;border:1.5px solid var(--ink)}
+.btn:hover{transform:translateY(-1px);box-shadow:var(--sh-md)}
+.btn.red{background:var(--red);border-color:var(--red)}
+.btn.green{background:var(--green);border-color:var(--green)}
+.btn.ghost{background:var(--card);color:var(--ink);border-color:var(--line)}
+.btn.ghost:hover{border-color:var(--ink)}
+.btn.lg{padding:14px 24px;font-size:1rem;border-radius:14px}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+@media(max-width:880px){.topsearch{display:none}.tlink{display:none}}
+
+/* ============ shared ============ */
+main{min-height:100svh}
+#app > .wrap:not(.homesec){padding-top:96px;padding-bottom:80px}
+@media(max-width:880px){#app > .wrap:not(.homesec){padding-top:84px}}
+.wrap{max-width:1200px;margin:0 auto;padding:0 20px}
+.view{padding-top:96px;padding-bottom:90px}
+.vt{opacity:0;transform:translateY(14px)}
+@media(prefers-reduced-motion:reduce){.vt{opacity:1;transform:none}}
+h1,h2,h3,h4{font-family:var(--display);font-weight:800;letter-spacing:-.015em;line-height:1.05}
+.eyebrow{font-family:var(--mono);font-size:.7rem;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--soft)}
+.card{background:var(--card);border:1.5px solid var(--line);border-radius:var(--r);box-shadow:var(--sh-sm)}
+.scorepill{display:inline-flex;align-items:center;font-family:var(--mono);font-weight:600;font-size:.78rem;border-radius:8px;padding:3px 9px;line-height:1.5}
+.sp-green{background:var(--green-wash);color:#0D7A5D}
+.sp-amber{background:var(--amber-wash);color:#9A7117}
+.sp-red{background:var(--red-wash);color:#C2363A}
+.trend{font-family:var(--mono);font-weight:600;font-size:.78rem}
+.t-up{color:var(--green)}.t-down{color:var(--red)}
+.avatar{border-radius:14px;display:flex;align-items:center;justify-content:center;font-family:var(--display);font-weight:800;color:#fff;flex-shrink:0;text-transform:uppercase}
+.stamp{display:inline-block;font-family:var(--mono);font-weight:600;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;border:2px solid currentColor;border-radius:8px;padding:4px 10px;transform:rotate(-2deg)}
+.st-green{color:var(--green)}.st-red{color:var(--red)}.st-amber{color:#9A7117;background:var(--amber-wash)}
+.crumb{font-family:var(--mono);font-size:.74rem;color:var(--soft);margin-bottom:18px;display:flex;gap:8px;align-items:center}
+.crumb a{text-decoration:none;color:var(--soft)}
+.crumb a:hover{color:var(--ink)}
+
+/* ============ home hero ============ */
+.hero{position:relative;padding:150px 0 60px;overflow:hidden}
+#stream{position:absolute;inset:0;z-index:0;pointer-events:none}
+.hero-in{position:relative;z-index:1;max-width:840px;margin:0 auto;padding:0 20px;text-align:center}
+.hero h1{font-size:clamp(2.5rem,6.4vw,4.4rem);max-width:18ch;margin:14px auto 0}
+.hero h1 .u-red{color:var(--red)}
+.hero h1 .u-green{color:var(--green);position:relative;white-space:nowrap}
+.hero h1 .u-green::after{content:"";position:absolute;left:0;right:0;bottom:.04em;height:.12em;background:var(--amber);z-index:-1;border-radius:3px;transform:rotate(-.6deg)}
+.hero p.sub{color:var(--soft);font-size:clamp(1rem,1.7vw,1.18rem);max-width:54ch;margin:18px auto 34px}
+.hero p.sub b{color:var(--ink)}
+
+.bigsearch{position:relative;max-width:660px;margin:0 auto;text-align:left}
+.bigsearch input{width:100%;height:68px;border:2px solid var(--ink);border-radius:20px;background:var(--card);padding:0 130px 0 58px;font-family:var(--body);font-size:1.12rem;color:var(--ink);box-shadow:0 4px 0 rgba(35,38,46,.9),var(--sh-md);transition:box-shadow .15s,transform .15s}
+.bigsearch input:focus{outline:none;transform:translateY(-2px);box-shadow:0 6px 0 var(--red),0 20px 48px rgba(35,38,46,.16)}
+.bigsearch input::placeholder{color:#A8ABB3}
+.bigsearch .mag{position:absolute;left:22px;top:34px;transform:translateY(-50%);color:var(--soft);pointer-events:none}
+.bigsearch .go{position:absolute;right:10px;top:10px;height:48px;border-radius:13px;padding:0 20px;background:var(--red);color:#fff;font-weight:700;font-size:.95rem;border:none;transition:background .15s}
+.bigsearch .go:hover{background:#C93539}
+.try{margin-top:16px;display:flex;gap:8px;flex-wrap:wrap;justify-content:center;align-items:center}
+.try span{font-family:var(--mono);font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--soft)}
+.try button{font-family:var(--mono);font-size:.78rem;border:1.5px solid var(--line);background:var(--card);border-radius:999px;padding:5px 13px;color:var(--soft);transition:all .15s}
+.try button:hover{border-color:var(--ink);color:var(--ink);transform:translateY(-1px)}
+
+/* dropdown (shared by both searches) */
+.dd{position:absolute;left:0;right:0;top:calc(100% + 8px);background:var(--card);border:1.5px solid var(--line);border-radius:16px;box-shadow:var(--sh-md);overflow:hidden;z-index:80;max-height:430px;overflow-y:auto}
+.dd-h{font-family:var(--mono);font-size:.64rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--soft);padding:12px 18px 6px}
+.dd-row{display:flex;align-items:center;gap:13px;padding:11px 18px;cursor:pointer;border:none;width:100%;text-align:left;background:none;transition:background .1s}
+.dd-row:hover,.dd-row.sel{background:var(--paper)}
+.dd-row .nm{font-weight:600;font-size:.96rem;line-height:1.3}
+.dd-row .sb{font-size:.8rem;color:var(--soft);line-height:1.3}
+.dd-row .end{margin-left:auto;display:flex;align-items:center;gap:10px}
+.dd-empty{padding:22px 20px;text-align:center}
+.dd-empty .nm{font-weight:600;margin-bottom:4px}
+.dd-empty .sb{font-size:.85rem;color:var(--soft);margin-bottom:14px}
+mark{background:var(--amber-wash);color:inherit;border-radius:3px;padding:0 1px}
+
+.hero-stats{display:flex;justify-content:center;gap:34px;margin-top:54px;flex-wrap:wrap}
+.hstat{text-align:center}
+.hstat .n{font-family:var(--display);font-weight:800;font-size:1.9rem}
+.hstat .n.red{color:var(--red)}.hstat .n.green{color:var(--green)}
+.hstat .l{font-family:var(--mono);font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;color:var(--soft);max-width:21ch;margin:2px auto 0;line-height:1.6}
+
+/* ============ home sections ============ */
+.homesec{padding:46px 0 8px}
+.homesec-h{display:flex;align-items:baseline;gap:14px;margin-bottom:20px;flex-wrap:wrap}
+.homesec-h h2{font-size:1.5rem}
+.homesec-h .more{margin-left:auto;font-family:var(--mono);font-size:.76rem;color:var(--soft);text-decoration:none}
+.homesec-h .more:hover{color:var(--ink)}
+.cardrow{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+@media(max-width:920px){.cardrow{grid-template-columns:1fr}}
+.mcard{padding:20px;display:block;text-decoration:none;transition:transform .15s,box-shadow .15s;cursor:pointer}
+.mcard:hover{transform:translateY(-3px);box-shadow:var(--sh-md)}
+.mcard-top{display:flex;gap:13px;align-items:center;margin-bottom:14px}
+.mcard .nm{font-weight:700;font-size:1.02rem;line-height:1.25}
+.mcard .sb{font-size:.8rem;color:var(--soft)}
+.mcard svg.spark{display:block;width:100%}
+.mcard-bot{display:flex;align-items:center;gap:10px;margin-top:12px}
+.howrow{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:6px}
+@media(max-width:920px){.howrow{grid-template-columns:1fr}}
+.how{padding:24px}
+.how .num{font-family:var(--mono);font-weight:600;font-size:.7rem;letter-spacing:.12em;color:var(--red);margin-bottom:10px}
+.how h3{font-size:1.08rem;margin-bottom:8px}
+.how p{font-size:.9rem;color:var(--soft)}
+.how p b{color:var(--ink)}
+
+/* ============ results page ============ */
+.res-h h1{font-size:1.9rem;margin:6px 0 4px}
+.res-h .sb{color:var(--soft)}
+.tabs{display:flex;gap:8px;margin:22px 0}
+.tab{font-weight:600;font-size:.86rem;padding:8px 16px;border-radius:999px;border:1.5px solid var(--line);background:var(--card);color:var(--soft);transition:all .15s}
+.tab.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.reslist{display:flex;flex-direction:column;gap:12px;max-width:780px}
+.resrow{display:flex;align-items:center;gap:16px;padding:16px 20px;text-decoration:none;transition:transform .12s,box-shadow .12s;cursor:pointer}
+.resrow:hover{transform:translateX(4px);box-shadow:var(--sh-md)}
+.resrow .nm{font-weight:700;font-size:1.04rem}
+.resrow .sb{font-size:.84rem;color:var(--soft)}
+.resrow .end{margin-left:auto;display:flex;align-items:center;gap:12px;flex-shrink:0}
+.noresult{max-width:560px;padding:34px;text-align:center}
+.noresult h2{font-size:1.4rem;margin-bottom:8px}
+.noresult p{color:var(--soft);margin-bottom:20px}
+
+/* ============ profile ============ */
+.pro-head{display:flex;gap:20px;align-items:center;flex-wrap:wrap;padding:26px;margin-bottom:18px}
+.pro-head .nm h1{font-size:1.85rem}
+.pro-head .sb{color:var(--soft);font-size:.94rem;margin-top:3px}
+.pro-head .sb a{font-weight:600;color:var(--ink)}
+.pro-head .badges{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.ringwrap{margin-left:auto;display:flex;align-items:center;gap:22px;flex-wrap:wrap}
+.ring{position:relative;width:112px;height:112px}
+.ring svg{transform:rotate(-90deg)}
+.ring .rv{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.ring .rv b{font-family:var(--display);font-size:1.55rem;font-weight:800}
+.ring .rv span{font-family:var(--mono);font-size:.56rem;letter-spacing:.12em;color:var(--soft);text-transform:uppercase}
+.ring-meta{font-family:var(--mono);font-size:.7rem;color:var(--soft);line-height:2;text-transform:uppercase;letter-spacing:.06em}
+.ring-meta b{color:var(--ink)}
+@media(max-width:760px){.ringwrap{margin-left:0}}
+.grid2{display:grid;grid-template-columns:1.05fr .95fr;gap:18px}
+@media(max-width:920px){.grid2{grid-template-columns:1fr}}
+.panel{padding:24px}
+.panel h3{font-size:1.05rem;margin-bottom:2px}
+.panel .ph{font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--soft);margin-bottom:16px}
+.legend{display:flex;gap:16px;font-family:var(--mono);font-size:.7rem;color:var(--soft);margin-top:8px;flex-wrap:wrap}
+.legend i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.callout{margin-top:14px;border-top:1px dashed var(--line);padding-top:13px;font-size:.9rem}
+.callout b.bad{color:var(--red)}
+.callout b.good{color:var(--green)}
+svg text{font-family:var(--mono)}
+.barrow{display:grid;grid-template-columns:200px 1fr 32px;gap:12px;align-items:center;margin-bottom:10px}
+.barrow .bl{font-size:.85rem;line-height:1.3}
+.bartrack{height:16px;background:var(--paper);border-radius:6px;overflow:hidden;border:1px solid var(--line)}
+.barfill{height:100%;width:0;background:var(--red);border-radius:5px}
+.barrow .bv{font-family:var(--mono);font-size:.78rem;color:var(--soft);text-align:right}
+@media(max-width:620px){.barrow{grid-template-columns:1fr;gap:4px}.barrow .bv{text-align:left}}
+.reply{border-left:3px solid var(--green);padding-left:15px;font-size:.93rem;margin:4px 0 16px}
+.planline{font-size:.9rem;border-top:1px dashed var(--line);padding-top:13px;margin-top:14px}
+.planline b{color:var(--green)}
+.reviews{display:flex;flex-direction:column;gap:12px}
+.review{padding:16px 18px;border:1.5px solid var(--line);border-radius:14px;background:var(--paper)}
+.review .rh{display:flex;gap:10px;align-items:center;margin-bottom:8px;font-family:var(--mono);font-size:.68rem;color:var(--soft);letter-spacing:.06em;text-transform:uppercase;flex-wrap:wrap}
+.review .tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.review .tag{font-family:var(--mono);font-size:.68rem;background:var(--red-wash);color:#C2363A;border-radius:6px;padding:2px 8px}
+.review .tag.help{background:var(--green-wash);color:#0D7A5D}
+.review p{font-size:.9rem}
+.pro-cta{display:flex;gap:12px;margin:22px 0 0;flex-wrap:wrap}
+
+/* ============ company ============ */
+.co-mgrlist{display:flex;flex-direction:column;gap:12px;margin-top:18px}
+
+/* ============ assessment ============ */
+.assess-wrap{max-width:780px;margin:0 auto}
+.modegrid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:24px}
+@media(max-width:700px){.modegrid{grid-template-columns:1fr}}
+.mode{padding:26px;text-align:left;transition:transform .15s,box-shadow .15s,border-color .15s;cursor:pointer}
+.mode:hover{transform:translateY(-3px);box-shadow:var(--sh-md);border-color:var(--ink)}
+a.mode{display:block;text-decoration:none;color:inherit}
+.mode h3{font-size:1.15rem;margin:10px 0 6px}
+.mode p{font-size:.88rem;color:var(--soft)}
+.mode .mt{font-family:var(--mono);font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;color:var(--green);margin-top:14px;display:block}
+.progress{position:sticky;top:64px;z-index:40;background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:13px 18px;display:flex;align-items:center;gap:16px;box-shadow:var(--sh-sm);margin-bottom:20px}
+.pbar{flex:1;height:9px;background:var(--paper);border-radius:5px;overflow:hidden;border:1px solid var(--line)}
+.pfill{height:100%;width:0;background:linear-gradient(90deg,var(--red),var(--amber),var(--green));border-radius:5px;transition:width .4s cubic-bezier(.4,0,.2,1)}
+.plabel{font-family:var(--mono);font-size:.7rem;color:var(--soft);letter-spacing:.06em;white-space:nowrap}
+.qcat h2{font-size:1.45rem}
+.qcat .catsub{font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--soft);margin:4px 0 18px}
+.subhead{font-family:var(--mono);font-size:.66rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--red);margin:22px 0 8px}
+.qrow{padding:16px 18px;border:1.5px solid var(--line);border-radius:14px;background:var(--card);margin-bottom:10px}
+.qrow .qt{font-size:.94rem;font-weight:500;margin-bottom:12px}
+.qrow .controls{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.seg{display:flex;gap:5px}
+.seg button{width:42px;height:38px;border:1.5px solid var(--line);border-radius:10px;background:var(--paper);font-family:var(--mono);font-weight:600;font-size:.86rem;color:var(--soft);transition:all .12s}
+.seg button:hover{border-color:var(--ink);color:var(--ink)}
+.seg button.on{background:var(--ink);border-color:var(--ink);color:#fff;transform:scale(1.06)}
+.seg-l{font-family:var(--mono);font-size:.6rem;letter-spacing:.06em;text-transform:uppercase;color:var(--soft);display:flex;justify-content:space-between;margin-top:5px}
+.impwrap{display:flex;align-items:center;gap:8px;margin-left:auto}
+.impwrap .il{font-family:var(--mono);font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;color:var(--soft)}
+.imp{display:flex;align-items:center;gap:6px;border:1.5px solid var(--line);border-radius:10px;padding:3px 6px;background:var(--paper)}
+.imp button{width:26px;height:26px;border-radius:7px;font-weight:700;color:var(--soft)}
+.imp button:hover{background:var(--card);color:var(--ink)}
+.imp b{font-family:var(--mono);font-size:.86rem;width:14px;text-align:center}
+@media(max-width:640px){.impwrap{margin-left:0}}
+.stepnav{display:flex;gap:12px;margin-top:24px;align-items:center}
+.steperr{font-size:.84rem;color:var(--red);font-weight:600;margin-left:6px}
+.scale-key{font-family:var(--mono);font-size:.66rem;color:var(--soft);letter-spacing:.04em;background:var(--card);border:1.5px dashed var(--line);border-radius:12px;padding:10px 16px;margin-bottom:18px;line-height:1.9}
+
+.whostrip{display:flex;align-items:center;gap:13px;background:var(--ink);color:#fff;border-radius:14px;padding:11px 16px;margin-bottom:12px;flex-wrap:wrap;box-shadow:var(--sh-sm)}
+.whostrip .wnm{font-weight:700;font-size:.94rem;line-height:1.2}
+.whostrip .wsb{font-family:var(--mono);font-size:.62rem;letter-spacing:.08em;color:#9FB0C6;text-transform:uppercase}
+.livechips{margin-left:auto;display:flex;gap:20px;align-items:center}
+.lc{text-align:right}
+.lc .lcv{font-family:var(--display);font-weight:800;font-size:1.25rem;line-height:1;transition:color .2s}
+.lc .lcl{font-family:var(--mono);font-size:.52rem;letter-spacing:.12em;color:#9FB0C6;text-transform:uppercase;margin-top:2px}
+@media(max-width:640px){.livechips{margin-left:0;width:100%;justify-content:flex-start}.lc{text-align:left}}
+.qx{font-size:.82rem;color:var(--soft);margin:-4px 0 13px;font-style:italic;line-height:1.5}
+.qx b{font-style:normal;font-family:var(--mono);font-size:.6rem;letter-spacing:.1em;color:var(--green);margin-right:6px}
+.qscore{font-family:var(--mono);font-weight:600;font-size:.74rem;border-radius:8px;padding:5px 10px;background:var(--paper);border:1.5px solid var(--line);color:var(--soft);white-space:nowrap}
+.qscore.sp-green{border-color:var(--green)}
+.qscore.sp-amber{border-color:var(--amber)}
+.qscore.sp-red{border-color:var(--red)}
+
+/* results */
+.resultcard{padding:30px;text-align:center}
+.resultcard .big{font-family:var(--display);font-weight:800;font-size:3.4rem;line-height:1}
+.resultcard .band{margin:10px 0 4px}
+.result-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px}
+@media(max-width:840px){.result-grid{grid-template-columns:1fr}}
+.catline{display:grid;grid-template-columns:150px 1fr 52px;gap:12px;align-items:center;margin-bottom:9px}
+.catline .cl{font-size:.84rem}
+.catline .cv{font-family:var(--mono);font-size:.78rem;text-align:right;color:var(--soft)}
+.helpchips{display:flex;flex-wrap:wrap;gap:9px;justify-content:center;margin:14px 0 4px}
+.chip{font-family:var(--mono);font-size:.76rem;font-weight:500;border:1.5px solid var(--line);border-radius:999px;padding:7px 13px;background:var(--card);color:var(--soft);transition:all .12s;user-select:none}
+.chip:hover{border-color:var(--green)}
+.chip.on{background:var(--green-wash);border-color:var(--green);color:#0D7A5D;font-weight:600}
+#filedStamp{display:none;font-family:var(--mono);font-weight:600;font-size:.84rem;letter-spacing:.08em;color:var(--green);border:3px double var(--green);border-radius:10px;padding:10px 16px;transform:rotate(-3deg)}
+
+/* ============ add manager ============ */
+.addcard{max-width:560px;margin:0 auto;padding:30px}
+.addcard h1{font-size:1.6rem;margin-bottom:6px}
+.addcard .sb{color:var(--soft);font-size:.92rem;margin-bottom:22px}
+.f{margin-bottom:16px}
+.f label{display:block;font-family:var(--mono);font-size:.66rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--soft);margin-bottom:6px}
+.f input{width:100%;height:46px;border:1.5px solid var(--line);border-radius:12px;background:var(--paper);padding:0 14px;font-family:var(--body);font-size:.96rem;color:var(--ink)}
+.f input:focus{outline:none;border-color:var(--ink);background:var(--card)}
+.anonnote{display:flex;gap:10px;align-items:flex-start;background:var(--green-wash);border:1.5px dashed var(--green);border-radius:12px;padding:13px 15px;font-size:.83rem;margin:18px 0;color:#0D6B52}
+
+/* ============ perspective toggle ============ */
+.persp{display:flex;gap:10px;margin-top:22px;flex-wrap:wrap}
+.persp button{flex:1;min-width:230px;text-align:left;border:2px solid var(--line);border-radius:14px;background:var(--card);padding:15px 18px;transition:all .15s}
+.persp button:hover{border-color:var(--ink)}
+.persp button.on{border-color:var(--ink);background:var(--ink);color:#fff;box-shadow:var(--sh-md)}
+.persp .pt{font-weight:700;font-size:.95rem;display:block}
+.persp .ps{font-size:.78rem;opacity:.75;display:block;margin-top:2px}
+
+/* ============ improvement report ============ */
+.report-head{padding:28px;display:flex;gap:22px;align-items:center;flex-wrap:wrap}
+.report-head h1{font-size:1.7rem}
+.report-head .sb{color:var(--soft);font-size:.9rem;margin-top:4px}
+.rx{padding:22px;border-left:5px solid var(--red);margin-bottom:14px}
+.rx.rank2{border-left-color:var(--amber)}
+.rx.rank3{border-left-color:#C9BFA9}
+.rx-h{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:6px}
+.rx-h h4{font-size:1.05rem}
+.rx-h .cat{font-family:var(--mono);font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;color:var(--soft)}
+.rx .why{font-size:.9rem;color:var(--soft);margin-bottom:12px}
+.rx ol{margin:0 0 12px 20px;font-size:.92rem}
+.rx ol li{margin-bottom:6px}
+.rx ol li::marker{font-family:var(--mono);font-weight:600;color:var(--red)}
+.rx .metric{font-family:var(--mono);font-size:.7rem;letter-spacing:.06em;text-transform:uppercase;color:var(--green);border-top:1px dashed var(--line);padding-top:10px}
+.blind{background:var(--red-wash);border:1.5px dashed var(--red);border-radius:14px;padding:16px 20px;font-size:.92rem;margin-top:14px}
+.blind b{color:#C2363A}
+.timeline{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:6px}
+@media(max-width:760px){.timeline{grid-template-columns:1fr}}
+.tl{padding:18px;border:1.5px solid var(--line);border-radius:14px;background:var(--paper)}
+.tl .d{font-family:var(--display);font-weight:800;font-size:1.2rem;color:var(--red)}
+.tl.t60 .d{color:#C99207}
+.tl.t90 .d{color:var(--green)}
+.tl ul{margin:8px 0 0 18px;font-size:.85rem}
+.tl ul li{margin-bottom:5px}
+.report-cta{display:flex;gap:12px;margin-top:22px;flex-wrap:wrap;align-items:center}
+#planStamp{display:none;font-family:var(--mono);font-weight:600;font-size:.82rem;letter-spacing:.08em;color:var(--green);border:3px double var(--green);border-radius:10px;padding:9px 15px;transform:rotate(-3deg)}
+
+@media print{
+  .topbar,footer,.report-cta,.crumb{display:none!important}
+  body{background:#fff}
+  .view{padding-top:10px}
+  .card{box-shadow:none;border-color:#bbb;break-inside:avoid}
+  .vt{opacity:1!important;transform:none!important}
+}
+
+footer{border-top:1.5px solid var(--line);margin-top:40px;background:var(--card)}
+.foot{max-width:1200px;margin:0 auto;padding:30px 20px;display:flex;gap:18px;align-items:center;flex-wrap:wrap;font-family:var(--mono);font-size:.7rem;color:var(--soft);letter-spacing:.04em}
+.foot .right{margin-left:auto}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-in">
+    <a class="brand" href="#/" aria-label="Managers That Suck home">
+      <svg width="36" height="36" viewBox="0 0 64 64" aria-hidden="true">
+        <rect x="2" y="2" width="60" height="60" rx="14" fill="#23262E"/>
+        <polyline points="13,22 24,40 31,46" fill="none" stroke="#E2474B" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <polyline points="31,46 40,38 50,20" fill="none" stroke="#149E7A" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <polygon points="50,20 41.5,21.5 47,29" fill="#149E7A"/>
+        <circle cx="31" cy="46" r="3.4" fill="#F0B429"/>
+      </svg>
+      <span class="brand-word">Managers<br>That <em>Suck</em></span>
+    </a>
+    <div class="topsearch" id="topSearchWrap">
+      <svg class="mag" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg>
+      <input id="topSearch" type="text" placeholder="Search managers or companies…" autocomplete="off" aria-label="Search managers or companies">
+      <kbd>/</kbd>
+      <div class="dd hide" id="topDD"></div>
+    </div>
+    <div class="topnav">
+      <a class="tlink" href="#/search">Browse</a>
+      <a class="tlink" href="#/add">Add a manager</a>
+      <a class="tlink" href="#/assess?self=1">For managers</a>
+      <a class="btn red" href="#/assess">Rate a manager</a>
+    </div>
+  </div>
+</div>
+
+<main id="app"></main>
+
+<footer>
+  <div class="foot">
+    <span>MANAGERS THAT SUCK · EST. 2010 · REBOOTED 2026</span>
+    <span class="stamp st-red" style="font-size:.58rem">SUCK MEASURED HERE</span>
+    <span class="right">DOWN IS DATA. UP IS THE POINT.</span>
+  </div>
+</footer>
+
+<!-- ============ view templates ============ -->
+<template id="t-home">
+<section class="hero">
+  <canvas id="stream" aria-hidden="true"></canvas>
+  <div class="hero-in">
+    <div class="eyebrow vt">110-QUESTION MTS-360 · ANONYMOUS · PUBLIC IMPROVEMENT</div>
+    <h1 class="vt">Is your <span class="u-red">next boss</span> on file? <span class="u-green">Search them.</span></h1>
+    <p class="sub vt">Anonymous, structured manager reviews — <b>companies named, managers named, reviewers never</b>. Managers see exactly where they suck. Candidates see whether they're fixing it.</p>
+    <div class="bigsearch vt" id="bigSearchWrap">
+      <svg class="mag" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg>
+      <input id="bigSearch" type="text" placeholder="Try a manager's name or a company…" autocomplete="off" aria-label="Search managers or companies">
+      <button class="go" id="bigGo">Search</button>
+      <div class="dd hide" id="bigDD"></div>
+    </div>
+    <div class="try vt"><span>Try:</span><button data-q="Ronald">Ronald Person2</button><button data-q="Logen">Logen Industries</button><button data-q="Regenie">P. Regenie</button><button data-q="Test2 Company">Test2 Company</button></div>
+    <div class="hero-stats vt">
+      <div class="hstat"><div class="n red" data-count="24" data-suffix="%">0</div><div class="l">work for their worst manager ever right now</div></div>
+      <div class="hstat"><div class="n red" data-count="85" data-suffix="%">0</div><div class="l">with bad managers are actively job hunting</div></div>
+      <div class="hstat"><div class="n green" data-count="4.3" data-dec="1" data-suffix="x">0</div><div class="l">team effectiveness under managers who improve</div></div>
+    </div>
+  </div>
+</section>
+<section class="homesec wrap">
+  <div class="homesec-h vt"><span class="stamp st-green">THE POINT</span><h2>Most improved this quarter</h2><a class="more" href="#/search">Browse all →</a></div>
+  <div class="cardrow" id="homeImproved"></div>
+</section>
+<section class="homesec wrap">
+  <div class="homesec-h vt"><span class="stamp st-red">FIXABLE</span><h2>Under review</h2><a class="more" href="#/search">Browse all →</a></div>
+  <div class="cardrow" id="homeUnder"></div>
+</section>
+<section class="homesec wrap">
+  <div class="homesec-h vt"><h2>Two doors in</h2></div>
+  <div class="modegrid" style="margin-top:0">
+    <a class="mode card vt" href="#/assess"><span class="stamp st-red">FOR EMPLOYEES</span><h3>Rate your manager</h3><p>Anonymous, structured, no rant box. The 110-question MTS-360 or the 3-minute quick read — filed straight into their public profile.</p><span class="mt">START THE ASSESSMENT →</span></a>
+    <a class="mode card vt" href="#/assess?self=1"><span class="stamp st-green">FOR MANAGERS</span><h3>Take the test yourself</h3><p>Self-assess on the same instrument and get a personal improvement report: your three weakest subscales, concrete weekly actions, blind-spot analysis against your team's scores, and a 30/60/90 plan.</p><span class="mt">GET YOUR IMPROVEMENT REPORT →</span></a>
+  </div>
+</section>
+<section class="homesec wrap" style="padding-bottom:30px">
+  <div class="homesec-h vt"><h2>How the suck cycle ends</h2></div>
+  <div class="howrow">
+    <div class="how card vt"><div class="num">STEP A — FILE</div><h3>Rate anonymously</h3><p>Take the real MTS-360: <b>110 behavior questions</b>, each scored on extent and importance. Your identity becomes a one-way hash. <b>No rant box</b> — behaviors, not insults.</p></div>
+    <div class="how card vt"><div class="num">STEP B — REVEAL</div><h3>Managers see the gap</h3><p>Team scores vs. self-assessment, category by category. <b>The perception gap is the curriculum</b> — plus a public right of reply on every profile.</p></div>
+    <div class="how card vt"><div class="num">STEP C — REBOUND</div><h3>Improvement goes public</h3><p>Scores decay after 24 months and recency is weighted, so <b>the trajectory is the headline</b>. Most Improved outranks Least Sucky. Candidates see the arc.</p></div>
+  </div>
+</section>
+</template>
+
+<template id="t-results">
+<div class="wrap">
+  <div class="res-h vt"><div class="eyebrow">SEARCH RESULTS</div><h1 id="resTitle"></h1><div class="sb" id="resSub"></div></div>
+  <div class="tabs vt"><button class="tab on" data-t="all">All</button><button class="tab" data-t="m">Managers</button><button class="tab" data-t="c">Companies</button></div>
+  <div class="reslist" id="resList"></div>
+</div>
+</template>
+
+<template id="t-add">
+<div class="wrap">
+  <div class="addcard card vt">
+    <div class="eyebrow">FORM MTS-REG</div>
+    <h1>Add a manager</h1>
+    <p class="sb">Anyone can register a manager — anonymously. The manager and company are public. You are not.</p>
+    <div class="f"><label for="aName">Manager name</label><input id="aName" type="text" placeholder="Full name"></div>
+    <div class="f"><label for="aCo">Company</label><input id="aCo" type="text" placeholder="Company name"></div>
+    <div class="f"><label for="aTitle">Title</label><input id="aTitle" type="text" placeholder="e.g. Director of Operations"></div>
+    <div class="f"><label for="aCity">City / region</label><input id="aCity" type="text" placeholder="e.g. Albuquerque, NM"></div>
+    <div class="anonnote">🛡 <span><b>Registered anonymously.</b> Your identity is discarded after a salted one-way hash is issued. The profile starts empty — scores only exist once assessments are filed.</span></div>
+    <button class="btn lg green" id="aSubmit">Register manager →</button>
+  </div>
+</div>
+</template>
+
+<template id="t-assess-pick">
+<div class="wrap assess-wrap">
+  <div class="crumb vt"><a href="#/">Home</a> / <span id="apCrumb">Assessment</span></div>
+  <div class="vt"><div class="eyebrow">FORM MTS-360 · REV 2026.06</div><h1 style="font-size:1.9rem;margin-top:6px">Take the assessment<span id="apFor"></span></h1>
+  <p style="color:var(--soft);max-width:56ch;margin-top:10px">The original Managers That Suck instrument: behaviors rated on <b>Extent</b> (how much they actually do it) × <b>Importance</b> (how much it matters in the role). Effectiveness = what they do ÷ what the role demands.</p></div>
+  <div class="persp vt">
+    <button id="perspTeam" class="on"><span class="pt">I'm rating my manager</span><span class="ps">Anonymous. Files into their public profile.</span></button>
+    <button id="perspSelf"><span class="pt">I am the manager</span><span class="ps">Self-assessment → personal improvement report with a 30/60/90 plan.</span></button>
+  </div>
+  <div class="f vt" style="max-width:460px;margin-top:20px;margin-bottom:0">
+    <label id="apWhoLabel" for="apWho">Who is this assessment about?</label>
+    <input id="apWho" list="mgrList" placeholder="Type a manager's name…" autocomplete="off">
+    <datalist id="mgrList"></datalist>
+    <div class="mono" id="apWhoStatus" style="font-size:.7rem;color:var(--soft);margin-top:7px">Not attached yet — you can still take it, but results won't file to a profile.</div>
+  </div>
+  <div class="modegrid">
+    <button class="mode card vt" data-mode="quick"><span class="stamp st-amber">~3 MIN</span><h3>Quick read</h3><p>19 questions — one per subscale, covering all eight categories. Enough for a directional score and a category radar.</p><span class="mt">19 QUESTIONS → FULL RADAR</span></button>
+    <button class="mode card vt" data-mode="full"><span class="stamp st-green">THE REAL THING</span><h3>Full MTS-360</h3><p>The complete 110-question instrument across 19 subscales, exactly as built in the original engine. The score managers can't argue with.</p><span class="mt">110 QUESTIONS → 19 SUBSCALES</span></button>
+  </div>
+</div>
+</template>
+
+<template id="t-assess-run">
+<div class="wrap assess-wrap">
+  <div class="whostrip vt" id="whoStrip"></div>
+  <div class="progress vt"><span class="plabel" id="pStep"></span><div class="pbar"><div class="pfill" id="pFill"></div></div><span class="plabel" id="pPct">0%</span></div>
+  <div class="scale-key vt" id="scaleKey"><b>EXTENT</b> 1 not at all → 5 to a very great extent — <b>5 is always the good end</b>, and every item explains what a 5 looks like &nbsp;·&nbsp; <b>IMPORTANCE</b> how much this matters in the role (defaults to 3) &nbsp;·&nbsp; scoring is live: every answer updates the running effectiveness above</div>
+  <div id="stepHost"></div>
+  <div class="stepnav vt"><button class="btn ghost" id="backBtn">← Back</button><button class="btn lg" id="nextBtn">Next category →</button><span class="steperr hide" id="stepErr">Answer the remaining items above</span></div>
+</div>
+</template>
+
+<template id="t-assess-done">
+<div class="wrap assess-wrap">
+  <div class="resultcard card vt">
+    <div class="eyebrow">ASSESSMENT COMPLETE</div>
+    <div class="big" id="finalScore">0.000</div>
+    <div class="band" id="finalBand"></div>
+    <p style="color:var(--soft);font-size:.9rem;max-width:46ch;margin:10px auto 0" id="finalNote"></p>
+  </div>
+  <div class="result-grid">
+    <div class="panel card vt"><h3>Category breakdown</h3><div class="ph">EFFECTIVENESS = Σ(EXTENT×IMPORTANCE) ÷ Σ(5×IMPORTANCE)</div><div id="catLines"></div></div>
+    <div class="panel card vt"><h3>What would actually help</h3><div class="ph">REQUIRED — THE FUN-NOT-ABUSIVE PART</div>
+      <div class="helpchips" id="helpChips" style="justify-content:flex-start">
+        <button class="chip">Weekly 1:1s that aren't status meetings</button>
+        <button class="chip">Praise in public, correct in private</button>
+        <button class="chip">Close the loop on ideas — even with a "no"</button>
+        <button class="chip">A development plan per report</button>
+        <button class="chip">Say "I was wrong" once a quarter</button>
+        <button class="chip">Delegate outcomes, not chores</button>
+      </div>
+      <div style="display:flex;gap:14px;align-items:center;margin-top:18px;flex-wrap:wrap">
+        <button class="btn lg green" id="fileBtn">File anonymously</button>
+        <span id="filedStamp">★ FILED · <span id="anonId"></span></span>
+      </div>
+      <div class="mono" style="font-size:.7rem;color:var(--soft);margin-top:12px" id="hashLine"></div>
+    </div>
+  </div>
+</div>
+</template>
+
+<template id="t-report">
+<div class="wrap" style="max-width:880px;margin:0 auto">
+  <div class="crumb vt"><a href="#/">Home</a> / <span>Self-assessment</span> / <b>Improvement report</b></div>
+  <div class="report-head card vt">
+    <div class="ring" id="rRingHost"></div>
+    <div><div class="eyebrow">MTS-360 IMPROVEMENT REPORT · <span id="rDate"></span></div>
+      <h1 id="rName">Your report</h1><div class="sb" id="rSub"></div>
+      <div style="margin-top:10px" id="rBand"></div></div>
+  </div>
+  <div id="rGapHost"></div>
+  <div class="grid2" style="margin-top:18px">
+    <div class="panel card vt"><h3>Category breakdown</h3><div class="ph">EFFECTIVENESS = Σ(EXTENT×IMPORTANCE) ÷ Σ(5×IMPORTANCE)</div><div id="rCats"></div></div>
+    <div class="panel card vt"><h3>Where you stand</h3><div class="ph">YOUR PROFILE VS THE BANDS</div><svg id="rRadar" width="100%"></svg>
+      <div class="legend"><span><i style="background:#149E7A"></i>Your self-assessment</span><span id="rTeamLeg" class="hide"><i style="background:#E2474B"></i>Your team's assessment</span></div></div>
+  </div>
+  <div class="panel card vt" style="margin-top:18px"><h3>Your prescription</h3><div class="ph">THREE WEAKEST SUBSCALES → CONCRETE WEEKLY ACTIONS · RESEARCH LEVERS: 360 LOOPS · FAST SPECIFIC FEEDBACK · COACHING · HABIT NUDGES</div>
+    <div id="rRx"></div></div>
+  <div class="panel card vt" style="margin-top:18px"><h3>The 30 / 60 / 90</h3><div class="ph">SKILLS BECOME HABITS OR THEY EVAPORATE</div>
+    <div class="timeline" id="rPlan"></div></div>
+  <div class="report-cta vt">
+    <button class="btn lg green" id="publishPlan">Publish improvement plan to profile</button>
+    <button class="btn lg ghost" id="printReport">Print / save report</button>
+    <span id="planStamp">★ PLAN ON FILE · RE-ASSESS <span id="planDate"></span></span>
+  </div>
+</div>
+</template>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script>
+/* ================================================================
+   DATA — the original MTS-360 instrument (110 questions, 19 subscales,
+   9 categories) recovered intact from the 2010 assessment engine.
+   ================================================================ */
+const CATS = ['Administrative','Leadership','Communication','Adaptability','Motivation','Technical','Cognitive','Results'];
+const BANK = [
+ {cat:'Administrative', sub:'Planning', qs:[
+  ['Involves others in the planning process','The team helps build the plan before it is announced, not after.'],
+  ['Actually uses plans to manage','The plan shows up in standups and decisions, not just the kickoff deck.'],
+  ['Develops complete, well-detailed plans','Owners, dates, dependencies, and risks are written down before work starts.'],
+  ['Makes plans that are clear and realistic','Anyone on the team can restate the plan, and the dates survive contact with reality.']]},
+ {cat:'Administrative', sub:'Organizing', qs:[
+  ['Organizes and schedules the work of subordinates','Everyone knows what they are doing this week without asking twice.'],
+  ['Maintains a balance between the overall “big picture” and day-to-day needs','Daily fires get fought without the quarter\u2019s goal disappearing.'],
+  ['Deals with higher priority problems and tasks first','The most important problem gets the morning, not the leftovers.'],
+  ['Establishes effective and efficient procedures for getting work done','Routine work has a routine path; nobody reinvents the request process.']]},
+ {cat:'Administrative', sub:'Personal Organization & Time Management', qs:[
+  ['Makes good use of time','The calendar matches stated priorities, and meetings end with decisions.'],
+  ['Sets daily goals; prepares daily “to do” lists','Each day starts with a written top-three, visible and honored.'],
+  ['Maintains a well-organized and orderly work space','Finding a document takes seconds, not an archaeology dig.'],
+  ['Keeps information and documentation in an orderly manner','Decisions, notes, and files live where the team can find them.'],
+  ['Processes paperwork quickly and effectively','Approvals and admin clear in days and never become the bottleneck.'],
+  ['Promptly returns phone calls or responds to written requests','Messages get answers within a day, even if just “received — answer by Friday.”'],
+  ['Takes time to meet with subordinates','1:1s happen on schedule and are never the first thing cut.']]},
+ {cat:'Leadership', sub:'Leadership Style & Influence', qs:[
+  ['Seems comfortable in a leadership position, exercising authority and control','Makes the call without agonizing or apologizing, and owns the outcome.'],
+  ['Readily commands the attention and respect of others in a group','When they speak in a group, the room genuinely listens.'],
+  ['Sets an example of personal performance which encourages excellence','Their own work sets the bar people stretch toward.'],
+  ['Conveys enthusiasm about meeting department objectives and deadlines','Deadlines come with visible energy, not dread.'],
+  ['Establishes high standards of performance for subordinates','Mediocre work gets kindly returned; the bar is known and consistent.'],
+  ['Conveys the attitude that everyone’s work is important','The newest hire\u2019s task gets the same respect as the flagship project.'],
+  ['Converts decisions into group action','A decision on Tuesday is motion by Wednesday, with named owners.']]},
+ {cat:'Leadership', sub:'Motivating Others', qs:[
+  ['Motivates others to work hard','People push because they want to, not because they are watched.'],
+  ['Recognizes and acknowledges subordinates’ good performance','Good work gets named specifically within days — often publicly.'],
+  ['Gets employees involved in their work','People shape how their work gets done, not just execute orders.'],
+  ['Creates an environment in which subordinates work their hardest','Obstacles get removed so effort goes to the work, not the friction.']]},
+ {cat:'Leadership', sub:'Delegating & Controlling', qs:[
+  ['Distributes the workload evenly and fairly among the work group','The grind and the glory rotate; no favorite gets all the good work.'],
+  ['Makes sure subordinates have sufficient authority to accomplish assigned objectives','Assignments come with the power to actually decide, not just do.'],
+  ['Clearly explains the desired results when assigning tasks','Handoffs state what done looks like, not just what to do.'],
+  ['Sets a specific time to follow up on assigned projects','Check-ins are scheduled at handoff — structure, not surveillance.'],
+  ['Delegates enough of their work to others','Their own plate is not a hoard of work others could grow on.'],
+  ['Lets people know when results are not up to expectations','A miss is named promptly and privately, with a path back.']]},
+ {cat:'Leadership', sub:'Coaching & Developing', qs:[
+  ['Knows when to supervise and coach subordinates and when to leave them on their own','New tasks get guidance; mastered ones get autonomy.'],
+  ['Gives training and guidance to subordinates when they are doing new tasks','Nobody is thrown in the deep end and graded on the splash.'],
+  ['Encourages subordinates to attend courses or training programs','Training requests get a yes — and calendar protection.'],
+  ['Gives stretching and challenging assignments to subordinates','Each person has work this quarter slightly beyond their comfort.'],
+  ['Provides information on what subordinates need to do to advance','The path to the next level is explicit, not a mystery.'],
+  ['Lets subordinates know when they are doing things well','“That was good, and here is why” is a routine sentence.'],
+  ['Shows interest in subordinates’ careers','Knows where each report wants to be in two years.'],
+  ['Lets subordinates know when they are doing things wrong','Misses are flagged early and specifically, never hoarded for reviews.'],
+  ['Accurately understands subordinates’ strengths and weaknesses','Assignments fit people; nobody stays miscast for long.'],
+  ['Gives feedback which helps subordinates improve performance','Feedback names behavior, impact, and a next step — and performance moves.']]},
+ {cat:'Leadership', sub:'Human Relations', qs:[
+  ['Treats individuals fairly','Same rules, same chances, same grace — for everyone.'],
+  ['Develops and maintains good, cooperative working relationships','Other teams want to work with this group.'],
+  ['Considers the opinions and feelings of others when presenting their own ideas','Asks what others think before pushing their own idea.'],
+  ['Gets along well with subordinates','Reports speak freely; nobody manages around them.'],
+  ['Gets along well with coworkers and peers','Peers seek them out rather than route around them.'],
+  ['Gets along well with superiors','Up the chain, trusted and heard without friction.'],
+  ['Seems to genuinely care about others’ feelings','Remembers the surgery, the recital, the hard week.']]},
+ {cat:'Leadership', sub:'Conflict Management', qs:[
+  ['Resolves conflicting demands among subordinates','Competing asks get a clear priority call, not a shrug.'],
+  ['Recognizes and deals with problems between individuals and groups','Tension between people is named and worked, not waited out.'],
+  ['Avoids compromising too quickly','Holds the line long enough to find the real answer.'],
+  ['Is willing to take an unpopular stand','Will say the necessary thing the room does not want to hear.'],
+  ['Addresses conflicts and discusses the real reasons underlying them','Digs to the actual issue under the stated complaint.']]},
+ {cat:'Communication', sub:'Informing', qs:[
+  ['Keeps subordinates informed of upcoming changes','The team hears changes from them first, with time to react.'],
+  ['Lets those who will be affected know of their plans and activities','Nobody discovers a decision that touches them after the fact.'],
+  ['Keeps people up to date with information','What is known gets shared fast; silence is never the default.'],
+  ['Keeps superiors and subordinates informed about department and company activities','The team knows what the org is doing and why it matters here.'],
+  ['Makes sure their superior has no “surprises”','Their boss never learns bad news from someone else.'],
+  ['Conveys a lot of information to others','Information flows through them — it never dies with them.']]},
+ {cat:'Communication', sub:'Listening', qs:[
+  ['Listens willingly to subordinates’ concerns','Concerns get a full hearing before any response.'],
+  ['Listens willingly to disagreements from subordinates','Pushback is welcomed and engaged, not punished.'],
+  ['Encourages an atmosphere where subordinates are free to air feelings, even strong ones','Strong feelings can be said out loud without career math.'],
+  ['Listens to people without interrupting','People finish their sentences. Every time.'],
+  ['Listens well in group situations, conveying understanding and acceptance','In meetings, people feel heard and are restated correctly.']]},
+ {cat:'Communication', sub:'Oral Communications', qs:[
+  ['Speaks effectively in front of a group','Holds a room: clear, prepared, no rambling.'],
+  ['Facilitates communication through effective questioning','Asks the question that unlocks the discussion.'],
+  ['Uses clear and understandable oral communications','The first explanation lands; no decoder ring required.'],
+  ['Uses forceful, persuasive oral communications','Makes the case so the room actually moves.'],
+  ['States their views concisely and logically','Point, reasons, done — in that order.'],
+  ['Gets their point across when talking','Listeners can repeat the message accurately afterward.']]},
+ {cat:'Communication', sub:'Written Communications', qs:[
+  ['Writes clear, concise business memos and letters','One read is enough; replies are answers, not clarifying questions.'],
+  ['Prepares written reports easily and quickly','Writing ships on time, without drama.'],
+  ['Clearly expresses ideas and concepts in writing','Complex ideas survive the trip onto the page.'],
+  ['Uses correct grammar in written communications','Clean, professional prose that never distracts from the point.']]},
+ {cat:'Adaptability', sub:'Personal Adaptability', qs:[
+  ['Adjusts to demands without becoming frustrated','New demands get absorbed without storm clouds.'],
+  ['Handles highly stressful, pressure-laden situations effectively','Pressure sharpens them; the team stays calm because they do.'],
+  ['Deals constructively with their own failures and mistakes','Their misses become lessons, openly shared.'],
+  ['Displays confidence even in ambiguous and stressful situations','Uncertainty does not paralyze; they move with what is known.'],
+  ['Accepts responsibility for their own mistakes','When it is their fault, they say so — first.'],
+  ['Admits their own mistakes and responds openly to the ideas of others','“I was wrong” is in their vocabulary, used unprompted.'],
+  ['Demonstrates awareness of their own strengths and weaknesses','Knows what they are bad at and staffs around it.']]},
+ {cat:'Motivation', sub:'Personal Motivation', qs:[
+  ['Has ambition to advance their career','Visibly building toward the next level — and pulling others along.'],
+  ['Persists at a task despite unexpected difficulties','Setbacks change the approach, not the goal.'],
+  ['Works long hours willingly when required','Shows up for the crunch without martyrdom.'],
+  ['Displays a high energy level; keeps busy','Brings energy that outlasts the afternoon.'],
+  ['Seeks increased responsibility on the job','Raises a hand for the hard thing before being asked.']]},
+ {cat:'Technical', sub:'Occupational / Technical Knowledge', qs:[
+  ['Is knowledgeable about the people and operations of their department and company','Knows how the department actually works, person by person.'],
+  ['Keeps up to date on technical developments related to the work','Current on the tools and methods the team uses daily.'],
+  ['Keeps informed about industry practices, procedures, and new developments','Brings outside developments in before competitors do.'],
+  ['Is sought by others for their knowledge on resolving technical problems','People line up at their desk with the hard questions.'],
+  ['Knows and understands the requirements of the job','No confusion about what the role demands.'],
+  ['Relies effectively on their own expertise to solve problems on the job','Solves problems hands-on when needed — credibly.']]},
+ {cat:'Cognitive', sub:'Problem Analysis & Decision Making', qs:[
+  ['Acts decisively when necessary','When a call is needed, a call is made.'],
+  ['Makes good decisions','The track record says: trust the judgment.'],
+  ['Makes timely decisions based on adequate information','Decides when enough is known — not before, not forever after.'],
+  ['Considers alternative solutions before making decisions','At least two real options exist before one is chosen.'],
+  ['Gets good input before making decisions','Asks the people closest to the problem first.'],
+  ['Works capably with large amounts of information','Synthesizes a mess of data into a clear picture.'],
+  ['Avoids making rash decisions','Big calls get a beat of deliberation, never just adrenaline.']]},
+ {cat:'Cognitive', sub:'Financial & Quantitative', qs:[
+  ['Analyzes financial information quickly','Reads a budget variance in minutes, not meetings.'],
+  ['Is good with numbers','Math errors do not survive their review.'],
+  ['Reads and understands financial or other quantitative information','P&L, forecast, dashboard — all legible to them.'],
+  ['Identifies key factors when reviewing budgets and financial statements','Spots the line item that actually matters.'],
+  ['Uses statistical and quantitative information','Arguments come with numbers, not just adjectives.']]},
+ {cat:'Results', sub:'Results Orientation', qs:[
+  ['Can be depended on to get the job done','If they said it, it ships. Full stop.'],
+  ['Gets the most out of available resources — people, materials, equipment','Squeezes real output from the people, budget, and tools at hand.'],
+  ['Produces high quality work','Output rarely bounces back for rework.'],
+  ['Gets a lot accomplished','The shipped list is long — and recent.'],
+  ['Overall, is a productive manager','Net of everything, the department produces because they run it.']]}
+];
+
+/* ============ seed database (in production: Postgres) ============ */
+const HUES=[[226,71,75],[20,158,122],[240,180,41],[96,98,219],[219,98,158],[35,38,46],[13,122,93],[201,83,57]];
+const SEED = {
+ companies: [
+  {id:'logen', name:'Logen Industries', industry:'IT Services', city:'Albuquerque, NM'},
+  {id:'test2', name:'Test2 Company', industry:'Operations', city:'Santa Fe, NM'},
+  {id:'testco', name:'Test Company', industry:'Professional Services', city:'Albuquerque, NM'},
+  {id:'vexcorp', name:'Vexcorp', industry:'Logistics SaaS', city:'Denver, CO'},
+  {id:'kettle', name:'Kettle & Crane', industry:'Marketing Agency', city:'Sacramento, CA'},
+  {id:'novacrest', name:'Novacrest Labs', industry:'Biotech', city:'San Diego, CA'}
+ ],
+ managers: [
+  {id:'rp2', name:'Ronald Person2', co:'logen', title:'Director', dept:'Infrastructure', score:.797, delta:.22, n:14,
+   trend:[.52,.55,.61,.66,.71,.74,.79,.80], plan:true, streak:6,
+   cats:{team:[.785,.800,.845,.825,.600,.800,.838,.720], self:[.700,.862,.810,.629,.760,.613,.650,.880]},
+   behaviors:[['Withholds praise',6],['Demands unrealistic rules of order',5],['Vague and indirect',3],['Ignores growth needs',2]],
+   reply:'Fair. The praise numbers are mine to fix. Improvement plan is public below — re-assess me in Q3. I can’t fire what I can’t see.',
+   reviews:[
+    {when:'MAY 2026', tags:['Withholds praise'], helps:['Praise in public, correct in private'], quote:'Six-week praise streak is real. First time in two years he said “good catch” in standup.'},
+    {when:'MAR 2026', tags:['Demands unrealistic rules of order'], helps:['Delegate outcomes, not chores'], quote:'Still rewrites our tickets at midnight, but he asked before doing it. Progress.'},
+    {when:'JAN 2026', tags:['Vague and indirect'], helps:['Weekly 1:1s that aren’t status meetings'], quote:'1:1s started. Actual agenda. Did not check email during it. Filed under miracles.'}]},
+  {id:'preg', name:'P. Regenie', co:'kettle', title:'Founder & Managing Director', dept:'Everything, allegedly', score:.83, delta:.31, n:23,
+   trend:[.42,.47,.53,.60,.68,.74,.79,.83], plan:true, streak:11,
+   cats:{team:[.82,.86,.80,.84,.81,.88,.86,.85], self:[.74,.80,.76,.79,.78,.84,.82,.83]},
+   behaviors:[['Demands unrealistic rules of order',22],['Embarrasses employees publicly',15],['Withholds praise',10]],
+   reply:'Worst Manager Ever, Class of 2011 — 23 filings, all deserved. Praise is earned, but it must be paid when earned. That was the lesson. Keep filing.',
+   reviews:[
+    {when:'MAY 2026', tags:[], helps:['Say “I was wrong” once a quarter'], quote:'Now rates himself LOWER than we rate him. The karate-teacher humility finally crossed the office threshold.'},
+    {when:'FEB 2026', tags:['Demands unrealistic rules of order'], helps:['Delegate outcomes, not chores'], quote:'The rules of order are still unrealistic. But now they come with espresso and an apology.'},
+    {when:'NOV 2025', tags:[], helps:['Close the loop on ideas — even with a “no”'], quote:'Idea board went live. Got my “no” in writing within 48 hours. Weirdly satisfying.'}]},
+  {id:'tm1', name:'Test Manager', co:'test2', title:'Director of IT', dept:'IT', score:.58, delta:-.04, n:2,
+   trend:[.66,.65,.64,.63,.62,.61,.60,.58], plan:false, streak:0,
+   cats:{team:[.62,.55,.52,.60,.48,.71,.64,.59], self:[.78,.82,.80,.77,.74,.85,.80,.81]},
+   behaviors:[['Embarrasses employees publicly',2],['No follow-up on employee ideas',2],['Ignores growth needs',1],['Uncaring',1]],
+   reply:null,
+   reviews:[
+    {when:'APR 2026', tags:['Embarrasses employees publicly'], helps:['Praise in public, correct in private'], quote:'Evaluated without ever having performance reviews or feedback on how to improve.'},
+    {when:'FEB 2026', tags:['No follow-up on employee ideas'], helps:['Close the loop on ideas — even with a “no”'], quote:'Impossible to work for. Ideas go in, nothing comes out — not even a no.'}]},
+  {id:'tm2', name:'Test2 Manager', co:'testco', title:'Director of Human Resources', dept:'HR', score:.63, delta:-.02, n:3,
+   trend:[.67,.66,.66,.65,.65,.64,.64,.63], plan:false, streak:0,
+   cats:{team:[.68,.60,.62,.58,.55,.70,.66,.65], self:[.75,.78,.74,.72,.70,.76,.75,.77]},
+   behaviors:[['Uncaring',2],['Ignores individual differences',2]],
+   reply:null,
+   reviews:[{when:'MAR 2026', tags:['Uncaring'], helps:['Weekly 1:1s that aren’t status meetings'], quote:'Does not exhibit compassion at any point during the work day. In HR. The irony files itself.'}]},
+  {id:'tm3', name:'Test3 Manager', co:'test2', title:'Director of Operations', dept:'Operations', score:.72, delta:.14, n:4,
+   trend:[.58,.59,.61,.63,.66,.68,.70,.72], plan:true, streak:3,
+   cats:{team:[.74,.70,.71,.73,.66,.75,.72,.71], self:[.70,.72,.70,.71,.69,.74,.71,.72]},
+   behaviors:[['No follow-up on employee ideas',3],['Withholds praise',2],['Ignores growth needs',2]],
+   reply:'The idea-loop feedback landed. Board is live, every idea gets an answer inside a week.',
+   reviews:[{when:'MAY 2026', tags:['Withholds praise'], helps:['A development plan per report'], quote:'My impression used to be that he didn’t value our input. The new idea board says otherwise.'}]},
+  {id:'jp1', name:'John Person1', co:'logen', title:'VP of Engineering', dept:'Engineering', score:.81, delta:.06, n:9,
+   trend:[.72,.73,.75,.76,.77,.79,.80,.81], plan:true, streak:8,
+   cats:{team:[.80,.83,.82,.79,.78,.85,.84,.80], self:[.76,.79,.80,.75,.74,.83,.80,.78]},
+   behaviors:[['Vague and indirect',2]],
+   reply:'Keeping the streak. Vague-and-indirect flags go to zero or the espresso budget doubles.',
+   reviews:[{when:'APR 2026', tags:[], helps:['Delegate outcomes, not chores'], quote:'Hands you the problem and the authority at the same time. Rarer than it should be.'}]},
+  {id:'dp3', name:'Darla Person3', co:'logen', title:'Director of Customer Success', dept:'CS', score:.68, delta:-.01, n:5,
+   trend:[.70,.70,.69,.69,.69,.68,.68,.68], plan:false, streak:0,
+   cats:{team:[.70,.66,.72,.69,.61,.70,.68,.67], self:[.72,.74,.75,.70,.68,.72,.70,.71]},
+   behaviors:[['Withholds praise',3],['Ignores growth needs',2]],
+   reply:null,
+   reviews:[{when:'MAR 2026', tags:['Ignores growth needs'], helps:['A development plan per report'], quote:'Solid operator, but careers stall here. Awaiting her self-assessment.'}]},
+  {id:'mch', name:'Maria Chen', co:'vexcorp', title:'Head of Product', dept:'Product', score:.86, delta:.05, n:17,
+   trend:[.78,.79,.81,.82,.83,.84,.85,.86], plan:true, streak:14,
+   cats:{team:[.84,.88,.87,.85,.83,.86,.88,.86], self:[.80,.84,.85,.82,.80,.84,.85,.83]},
+   behaviors:[],
+   reply:'Standing request: file the hard stuff. The radar only helps if it’s honest.',
+   reviews:[{when:'MAY 2026', tags:[], helps:['Close the loop on ideas — even with a “no”'], quote:'Closes every loop. Even the no’s feel like coaching.'}]},
+  {id:'ghol', name:'Greg Holloway', co:'vexcorp', title:'VP of Sales', dept:'Sales', score:.54, delta:-.07, n:11,
+   trend:[.68,.66,.64,.62,.60,.58,.56,.54], plan:false, streak:0,
+   cats:{team:[.58,.50,.49,.52,.45,.66,.60,.62], self:[.84,.88,.86,.80,.82,.88,.85,.90]},
+   behaviors:[['Embarrasses employees publicly',8],['Never admits being wrong',7],['Withholds praise',5],['Vague and indirect',4]],
+   reply:null,
+   reviews:[
+    {when:'MAY 2026', tags:['Embarrasses employees publicly'], helps:['Praise in public, correct in private'], quote:'Pipeline review is a public flogging with slides. The 30-point perception gap explains everything.'},
+    {when:'APR 2026', tags:['Never admits being wrong'], helps:['Say “I was wrong” once a quarter'], quote:'Forecast missed by 40%. Somehow it was the weather, the leads, and us.'}]},
+  {id:'aoye', name:'Adaeze Oyelaran', co:'novacrest', title:'Director of Research', dept:'R&D', score:.79, delta:.09, n:8,
+   trend:[.66,.68,.70,.72,.74,.76,.78,.79], plan:true, streak:5,
+   cats:{team:[.78,.80,.76,.81,.74,.88,.86,.79], self:[.74,.76,.74,.78,.72,.86,.84,.77]},
+   behaviors:[['Vague and indirect',3],['No follow-up on employee ideas',2]],
+   reply:'Lab notebooks taught me to log everything except my own management. Logging it now.',
+   reviews:[{when:'APR 2026', tags:['Vague and indirect'], helps:['Weekly 1:1s that aren’t status meetings'], quote:'Brilliant scientist, fuzzy delegator. The 1:1 cadence is helping both of us.'}]},
+  {id:'bfin', name:'Brett Finch', co:'kettle', title:'Creative Director', dept:'Creative', score:.61, delta:.03, n:7,
+   trend:[.55,.55,.56,.57,.58,.59,.60,.61], plan:true, streak:2,
+   cats:{team:[.60,.58,.64,.62,.55,.72,.63,.60], self:[.70,.74,.78,.70,.68,.80,.72,.71]},
+   behaviors:[['Withholds praise',4],['Demands unrealistic rules of order',3],['Ignores individual differences',2]],
+   reply:'Plan filed. Apparently “make it pop” is vague and indirect. Working on verbs.',
+   reviews:[{when:'MAR 2026', tags:['Withholds praise'], helps:['Praise in public, correct in private'], quote:'Great taste, allergic to compliments. Improvement plan started — two whole “nice work”s last sprint.'}]},
+  {id:'spat', name:'Sunita Patel', co:'novacrest', title:'VP of Operations', dept:'Operations', score:.74, delta:.04, n:6,
+   trend:[.68,.69,.70,.71,.72,.73,.73,.74], plan:false, streak:0,
+   cats:{team:[.76,.72,.73,.75,.70,.74,.78,.76], self:[.74,.73,.72,.74,.71,.75,.77,.74]},
+   behaviors:[['No follow-up on employee ideas',2]],
+   reply:null,
+   reviews:[{when:'FEB 2026', tags:[], helps:['Close the loop on ideas — even with a “no”'], quote:'Smallest perception gap on the platform. She knows exactly who she is. Now close the loops.'}]}
+ ]
+};
+SEED.managers.forEach(m=>{ m.coName = SEED.companies.find(c=>c.id===m.co).name; m.city = SEED.companies.find(c=>c.id===m.co).city; });
+let DB={companies:[],managers:[]}, demoMode=false;
+</script>
+<script>
+/* ================================================================
+   APP — router, search, views, charts, three.js, assessment engine
+   ================================================================ */
+gsap.registerPlugin(ScrollTrigger);
+
+/* ---- improvement prescription library: one per subscale ---- */
+const RX = {
+ 'Planning':{why:'Plans nobody helped make get ignored in execution — involvement is what converts a plan from your document into the team\'s commitment.',
+  a:['Draft the next plan with the team in the room, not for them','Open the plan in week-3 standup, not just at kickoff — plans are for managing, not filing','Cut every plan to one page: owners, dates, the three things that matter'],
+  m:'“Involves others in planning” and “actually uses plans” at next 360'},
+ 'Organizing':{why:'Teams read priorities from what you touch first. Triage by arrival order and they learn that urgency beats importance.',
+  a:['Start each day on the highest-priority problem, visibly','Publish one simple intake procedure so work has one front door','Block a weekly big-picture hour — day-to-day will happily eat it otherwise'],
+  m:'“Deals with higher priority problems first” at next 360'},
+ 'Personal Organization & Time Management':{why:'A manager who can\'t find time for subordinates is, functionally, absent. Time discipline is what makes you reachable.',
+  a:['Top-3 list every morning before the inbox opens','24-hour response rule on anything a report sends you','Standing office hours — time with subordinates scheduled, not scavenged'],
+  m:'“Takes time to meet with subordinates” at next 360'},
+ 'Leadership Style & Influence':{why:'Standards are set by example or not at all. Teams excel toward what they watch you do, not what you announce.',
+  a:['Ship one piece of your own work visibly each week — performance that encourages excellence','End every decision meeting with named owners and next actions','Say out loud why each assignment matters when you hand it over'],
+  m:'“Sets an example which encourages excellence” at next 360'},
+ 'Motivating Others':{why:'Recognition is fuel and it expires fast. Praise paid late, vague, or never reads as praise withheld.',
+  a:['Praise specifically within 48 hours of the good work — name the behavior, not just “nice job”','Connect one task per person to the outcome it serves this week','Ask each report what kind of work energizes them, then route some of it their way'],
+  m:'“Recognizes and acknowledges good performance” at next 360'},
+ 'Delegating & Controlling':{why:'Delegating tasks without authority creates errand-runners; delegating outcomes with authority creates managers-in-training.',
+  a:['Hand over the outcome and the authority in the same sentence','Set the follow-up date at handoff so checking in is structure, not surveillance','Rebalance the workload monthly — fairness is audited, not assumed'],
+  m:'“Sufficient authority for assigned objectives” at next 360'},
+ 'Coaching & Developing':{why:'Growth is the wage you pay beyond salary. People who can\'t see a path forward through you will find one around you.',
+  a:['Write a one-page development plan with each report this month','Give one stretch assignment per person per quarter — with cover for failure','Feedback formula every time: behavior, impact, next step'],
+  m:'“Gives feedback which improves performance” at next 360'},
+ 'Human Relations':{why:'Fairness is the operating system everything else runs on. One visibly unfair call costs ten fair ones.',
+  a:['Open 1:1s with their agenda, not yours','Ask for opinions before stating your own in group settings','Audit assignments quarterly: who got the good work, who got the grind'],
+  m:'“Treats individuals fairly” at next 360'},
+ 'Conflict Management':{why:'Unaddressed conflict doesn\'t cool, it composts. Naming the real issue early is cheaper than managing the fallout late.',
+  a:['Name the conflict in the room while it\'s small','Ask what\'s actually underneath the disagreement — address that, not the symptom','Take the unpopular stand when the data demands it; compromise bought too early costs double'],
+  m:'“Addresses real reasons underlying conflicts” at next 360'},
+ 'Informing':{why:'Information vacuums fill with anxiety. People affected by your plans should never learn about them second-hand.',
+  a:['Send a short weekly what\'s-changing note','Tell affected people first, before the general announcement','No-surprises rule upward: your boss hears it from you, early'],
+  m:'“Keeps subordinates informed of upcoming changes” at next 360'},
+ 'Listening':{why:'Listening is the only feedback channel you don\'t control — interrupt it and it routes around you permanently.',
+  a:['First two minutes of any concern: no interruptions, no solutions','Ask one follow-up question before responding','Explicitly invite the disagreement: “tell me where this is wrong”'],
+  m:'“Listens willingly to disagreements” at next 360'},
+ 'Oral Communications':{why:'A point that takes ten minutes to reach was lost at minute two. Clarity is a courtesy and a multiplier.',
+  a:['Lead with the point, then the reasoning','One idea per slide, one decision per meeting','Replace one monologue per week with three questions'],
+  m:'“Gets their point across when talking” at next 360'},
+ 'Written Communications':{why:'Your writing is you, asynchronously. Murky memos generate meetings; clear ones prevent them.',
+  a:['One-screen memos: if it scrolls, it\'s two documents','Bottom line up front — conclusion first, justification after','Read it aloud before sending; the ear catches what the eye forgives'],
+  m:'“Clearly expresses ideas in writing” at next 360'},
+ 'Personal Adaptability':{why:'How you handle your own mistakes is the ceiling on how honestly your team reports theirs.',
+  a:['Own one mistake publicly per quarter, specifically and without a “but”','Debrief failures as process problems, not people problems','Ask “what am I missing?” once per week and wait for a real answer'],
+  m:'“Admits mistakes and responds openly to ideas” at next 360'},
+ 'Personal Motivation':{why:'Energy is contagious in both directions. Persistence through difficulty is watched more closely than any speech.',
+  a:['Put visible energy on the stated priority — calendars don\'t lie','Pick one stalled task and push it through the difficulty this week','Ask for one stretch responsibility instead of waiting to be handed it'],
+  m:'“Persists despite unexpected difficulties” at next 360'},
+ 'Occupational / Technical Knowledge':{why:'Technical credibility is rented, not owned. A manager who stops learning the craft starts managing by hearsay.',
+  a:['One hour a week hands-on with the actual work','Shadow the front line monthly — where the work meets reality','Bring one industry development to the team each month'],
+  m:'“Keeps up to date on technical developments” at next 360'},
+ 'Problem Analysis & Decision Making':{why:'Good decisions are mostly good inputs. Deciding fast on thin information is gambling with the team\'s time.',
+  a:['Get input from the people closest to the problem before deciding','Force two real alternatives onto the table before choosing','Timestamp decisions with their rationale — future-you will need the receipts'],
+  m:'“Gets good input before making decisions” at next 360'},
+ 'Financial & Quantitative':{why:'Budgets are strategy in numeric form. If you can\'t read them, someone else is making your strategic decisions.',
+  a:['Walk the budget monthly with someone fluent until you are','Know your five key metrics cold — definitions, drivers, current values','Quantify your next proposal: cost, benefit, break-even'],
+  m:'“Identifies key factors in budgets and financials” at next 360'},
+ 'Results Orientation':{why:'Dependability is the whole reputation. “Gets the job done” is the score every other score rolls up into.',
+  a:['Commit smaller, deliver always — recalibrate promises to reality','Remove one resource bottleneck for the team each week','Publish a short weekly “shipped” list — momentum made visible'],
+  m:'“Can be depended on to get the job done” at next 360'}
+};
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const app=$('#app');
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ---- shared bits ---- */
+const band=v=>v>=.8?['Exceeding','sp-green']:v>=.7?['Within requirements','sp-amber']:['Needs improvement','sp-red'];
+const bandColor=v=>v>=.8?'#149E7A':v>=.7?'#C99207':'#E2474B';
+const hueFor=s=>{let h=0;for(const c of s)h=(h*31+c.charCodeAt(0))>>>0;return HUES[h%HUES.length];};
+const avatar=(name,size=46,fs=null)=>{const [r,g,b]=hueFor(name);const ini=name.split(/\s+/).map(w=>w[0]).slice(0,2).join('');
+  return `<div class="avatar" style="width:${size}px;height:${size}px;font-size:${fs||size*.36}px;background:linear-gradient(135deg,rgb(${r},${g},${b}),rgb(${Math.max(0,r-50)},${Math.max(0,g-40)},${Math.max(0,b-30)}))">${esc(ini)}</div>`;};
+const pill=v=>{const[t,c]=band(v);return `<span class="scorepill ${c}">${v.toFixed(2)}</span>`;};
+const trendTxt=d=>d>=0?`<span class="trend t-up">▲ +${d.toFixed(2)}</span>`:`<span class="trend t-down">▼ ${d.toFixed(2)}</span>`;
+const spark=(vals,w=240,h=44)=>{
+  const lo=Math.min(...vals)-.03, hi=Math.max(...vals)+.03;
+  const X=i=>4+(w-8)*i/(vals.length-1), Y=v=>h-4-(h-8)*(v-lo)/(hi-lo);
+  const d=vals.map((v,i)=>`${i?'L':'M'}${X(i).toFixed(1)},${Y(v).toFixed(1)}`).join(' ');
+  const up=vals[vals.length-1]>=vals[0], c=up?'#149E7A':'#E2474B';
+  return `<svg class="spark" viewBox="0 0 ${w} ${h}" height="${h}"><path d="${d}" fill="none" stroke="${c}" stroke-width="2.5" stroke-linecap="round"/><circle cx="${X(vals.length-1)}" cy="${Y(vals[vals.length-1])}" r="3.4" fill="${c}"/></svg>`;};
+
+/* ---- search engine ---- */
+function searchAll(q){
+  q=q.trim().toLowerCase();
+  if(!q) return {m:[],c:[]};
+  const score=(text)=>{const t=text.toLowerCase();
+    if(t===q)return 100; if(t.startsWith(q))return 80;
+    if(t.split(/\s+/).some(w=>w.startsWith(q)))return 60;
+    if(t.includes(q))return 40; return 0;};
+  const m=DB.managers.map(x=>({x,s:Math.max(score(x.name),score(x.coName)*.7,score(x.title)*.5)}))
+    .filter(r=>r.s>0).sort((a,b)=>b.s-a.s||b.x.n-a.x.n).map(r=>r.x);
+  const c=DB.companies.map(x=>({x,s:score(x.name)})).filter(r=>r.s>0).sort((a,b)=>b.s-a.s).map(r=>r.x);
+  return {m,c};
+}
+const hl=(text,q)=>{const i=text.toLowerCase().indexOf(q.toLowerCase());
+  return i<0?esc(text):esc(text.slice(0,i))+'<mark>'+esc(text.slice(i,i+q.length))+'</mark>'+esc(text.slice(i+q.length));};
+
+function bindSearch(input, dd){
+  let sel=-1, rows=[];
+  const close=()=>{dd.classList.add('hide');sel=-1;};
+  const render=()=>{
+    const q=input.value.trim();
+    if(!q){close();return;}
+    const {m,c}=searchAll(q);
+    rows=[];
+    let h='';
+    if(m.length){h+='<div class="dd-h">Managers</div>';
+      m.slice(0,5).forEach(x=>{rows.push({href:'#/m/'+x.id});
+        h+=`<button class="dd-row" data-href="#/m/${x.id}">${avatar(x.name,38)}<div><div class="nm">${hl(x.name,q)}</div><div class="sb">${esc(x.title)} · ${hl(x.coName,q)}</div></div><div class="end">${pill(x.score)}${trendTxt(x.delta)}</div></button>`;});}
+    if(c.length){h+='<div class="dd-h">Companies</div>';
+      c.slice(0,3).forEach(x=>{const n=DB.managers.filter(mm=>mm.co===x.id).length;rows.push({href:'#/c/'+x.id});
+        h+=`<button class="dd-row" data-href="#/c/${x.id}">${avatar(x.name,38)}<div><div class="nm">${hl(x.name,q)}</div><div class="sb">${esc(x.industry)} · ${esc(x.city)}</div></div><div class="end"><span class="scorepill sp-amber">${n} managers</span></div></button>`;});}
+    if(!m.length&&!c.length){
+      h=`<div class="dd-empty"><div class="nm">No file on “${esc(q)}” yet</div><div class="sb">Be the first. Register them anonymously — the profile is public, you are not.</div><a class="btn green" href="#/add?name=${encodeURIComponent(q)}">+ Add “${esc(q)}”</a></div>`;}
+    dd.innerHTML=h; dd.classList.remove('hide');
+    $$('.dd-row',dd).forEach(r=>r.addEventListener('click',()=>{location.hash=r.dataset.href;close();input.blur();}));
+    if(!reduced) gsap.from(dd.children,{opacity:0,y:6,duration:.22,stagger:.025,ease:'power2.out'});
+  };
+  input.addEventListener('input',render);
+  input.addEventListener('focus',render);
+  input.addEventListener('keydown',e=>{
+    const items=$$('.dd-row',dd);
+    if(e.key==='ArrowDown'){e.preventDefault();sel=Math.min(sel+1,items.length-1);}
+    else if(e.key==='ArrowUp'){e.preventDefault();sel=Math.max(sel-1,0);}
+    else if(e.key==='Enter'){e.preventDefault();
+      if(sel>=0&&items[sel]) location.hash=items[sel].dataset.href;
+      else location.hash='#/search?q='+encodeURIComponent(input.value.trim());
+      close();input.blur();return;}
+    else if(e.key==='Escape'){close();input.blur();return;}
+    else return;
+    items.forEach((it,i)=>it.classList.toggle('sel',i===sel));
+    if(items[sel]) items[sel].scrollIntoView({block:'nearest'});
+  });
+  document.addEventListener('click',e=>{if(!dd.contains(e.target)&&e.target!==input)close();});
+}
+bindSearch($('#topSearch'),$('#topDD'));
+addEventListener('keydown',e=>{if(e.key==='/'&&!/INPUT|TEXTAREA/.test(document.activeElement.tagName)){e.preventDefault();($('#bigSearch')||$('#topSearch')).focus();}});
+
+/* ---- charts ---- */
+function drawRadar(svgEl, team, self){
+  const cx=180,cy=186,R=126,n=CATS.length;
+  const pt=(i,v)=>{const a=-Math.PI/2+i*2*Math.PI/n;return [cx+Math.cos(a)*R*v,cy+Math.sin(a)*R*v];};
+  let g='';
+  [0.25,0.5,0.7,0.8,1].forEach(r=>{const ring=CATS.map((_,i)=>pt(i,r).join(',')).join(' ');
+    const hot=r===0.7||r===0.8;
+    g+=`<polygon points="${ring}" fill="none" stroke="${hot?'#C9BFA9':'#EFE9DD'}" stroke-width="${hot?1.3:1}" ${hot?'stroke-dasharray="4 4"':''}/>`;});
+  CATS.forEach((l,i)=>{const[x,y]=pt(i,1),[lx,ly]=pt(i,1.16);
+    g+=`<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="#F0EAE0"/>`;
+    g+=`<text x="${lx}" y="${ly}" font-size="10.5" fill="#6B7280" text-anchor="middle" dominant-baseline="middle">${l.toUpperCase()}</text>`;});
+  const poly=v=>v.map((x,i)=>pt(i,x).join(',')).join(' ');
+  g+=`<polygon class="rTeam" points="${poly(team)}" fill="rgba(20,158,122,.16)" stroke="#149E7A" stroke-width="2.5" stroke-linejoin="round"/>`;
+  if(self) g+=`<polygon class="rSelf" points="${poly(self)}" fill="rgba(226,71,75,.09)" stroke="#E2474B" stroke-width="2.5" stroke-dasharray="7 5" stroke-linejoin="round"/>`;
+  svgEl.setAttribute('viewBox','0 0 360 372'); svgEl.innerHTML=g;
+  $$('.rTeam,.rSelf',svgEl).forEach((p,k)=>gsap.from(p,{scale:0,opacity:0,transformOrigin:`${cx}px ${cy}px`,duration:1,delay:.15+k*.2,ease:'back.out(1.4)',scrollTrigger:{trigger:svgEl,start:'top 85%'}}));
+}
+function drawArc(svgEl, vals){
+  const qs=["Q3'24","Q4'24","Q1'25","Q2'25","Q3'25","Q4'25","Q1'26","Q2'26"];
+  const L=52,Rt=14,T=16,B=234,W=520,lo=Math.min(.42,Math.min(...vals)-.05),hi=Math.max(.92,Math.max(...vals)+.05);
+  const X=i=>L+(W-L-Rt)*i/(qs.length-1), Y=v=>B-(B-T)*(v-lo)/(hi-lo);
+  let g='';
+  g+=`<rect x="${L}" y="${Y(.7)}" width="${W-L-Rt}" height="${B-Y(.7)}" fill="rgba(226,71,75,.06)"/>`;
+  g+=`<rect x="${L}" y="${Y(.8)}" width="${W-L-Rt}" height="${Y(.7)-Y(.8)}" fill="rgba(240,180,41,.12)"/>`;
+  g+=`<rect x="${L}" y="${T}" width="${W-L-Rt}" height="${Y(.8)-T}" fill="rgba(20,158,122,.09)"/>`;
+  [[.7,'#E2474B'],[.8,'#149E7A']].forEach(([v,c])=>{
+    g+=`<line x1="${L}" x2="${W-Rt}" y1="${Y(v)}" y2="${Y(v)}" stroke="${c}" stroke-dasharray="5 5" stroke-width="1.2"/>`;
+    g+=`<text x="${L-7}" y="${Y(v)+4}" font-size="10.5" fill="${c}" text-anchor="end">${v.toFixed(2)}</text>`;});
+  qs.forEach((q,i)=>g+=`<text x="${X(i)}" y="${B+20}" font-size="9.5" fill="#6B7280" text-anchor="middle">${q}</text>`);
+  const d=vals.map((v,i)=>`${i?'L':'M'}${X(i)},${Y(v)}`).join(' ');
+  g+=`<path class="arcP" d="${d}" fill="none" stroke="#23262E" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>`;
+  vals.forEach((v,i)=>g+=`<circle class="arcD" cx="${X(i)}" cy="${Y(v)}" r="5" fill="${bandColor(v)}" stroke="#fff" stroke-width="2"/>`);
+  svgEl.setAttribute('viewBox','0 0 520 262'); svgEl.innerHTML=g;
+  const p=$('.arcP',svgEl), len=p.getTotalLength();
+  gsap.set(p,{strokeDasharray:len,strokeDashoffset:len});
+  gsap.to(p,{strokeDashoffset:0,duration:1.8,ease:'power2.inOut',scrollTrigger:{trigger:svgEl,start:'top 85%'}});
+  gsap.from($$('.arcD',svgEl),{scale:0,transformOrigin:'center',duration:.35,stagger:.14,ease:'back.out(3)',delay:.25,scrollTrigger:{trigger:svgEl,start:'top 85%'}});
+}
+function drawBars(host, data){
+  if(!data.length){host.innerHTML='<p style="color:var(--soft);font-size:.9rem">No behavior flags on file. Frankly suspicious — file the hard stuff.</p>';return;}
+  const max=Math.max(...data.map(d=>d[1]));
+  host.innerHTML=data.map(([l,v])=>`<div class="barrow"><div class="bl">${esc(l)}</div><div class="bartrack"><div class="barfill" data-w="${(v/max*100).toFixed(1)}"></div></div><div class="bv">${v}</div></div>`).join('');
+  $$('.barfill',host).forEach((b,i)=>gsap.to(b,{width:b.dataset.w+'%',duration:1,delay:i*.07,ease:'power3.out',scrollTrigger:{trigger:host,start:'top 88%'}}));
+}
+function ringSVG(v,size=112,sw=10){
+  const r=(size-sw)/2, C=2*Math.PI*r, c=bandColor(v);
+  return `<svg width="${size}" height="${size}"><circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="#EFE9DD" stroke-width="${sw}"/><circle class="ringFG" cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="${c}" stroke-width="${sw}" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C}" data-off="${C*(1-v)}"/></svg>`;
+}
+
+/* ---- view render helpers ---- */
+function showVt(scope){
+  const els=$$('.vt',scope||app);
+  if(!reduced)gsap.to(els,{opacity:1,y:0,duration:.5,stagger:.03,ease:'power3.out'});
+  else els.forEach(e=>{e.style.opacity=1;e.style.transform='none';});
+}
+async function api(path,body){
+  const r=await fetch('/api'+path,body?{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}:undefined);
+  const j=await r.json().catch(()=>({success:false,error:'Bad response from server'}));
+  if(!r.ok||!j.success)throw new Error(j.error||('Request failed ('+r.status+')'));
+  return j.data;
+}
+function absorbManager(mv){
+  const i=DB.managers.findIndex(x=>x.id===mv.id);
+  if(i>=0)DB.managers[i]=mv;else DB.managers.push(mv);
+  return mv;
+}
+function absorbCompany(cv){
+  if(!DB.companies.find(c=>c.id===cv.id))DB.companies.push(cv);
+}
+function mount(tplId){
+  const t=document.getElementById(tplId);
+  app.innerHTML=''; app.appendChild(t.content.cloneNode(true));
+  scrollTo(0,0);
+  ScrollTrigger.getAll().forEach(s=>s.kill());
+  if(!reduced) gsap.to($$('.vt',app),{opacity:1,y:0,duration:.6,stagger:.06,ease:'power3.out'});
+  else $$('.vt',app).forEach(e=>{e.style.opacity=1;e.style.transform='none';});
+}
+const mgrCard=m=>`<a class="mcard card" href="#/m/${m.id}">
+  <div class="mcard-top">${avatar(m.name,46)}<div><div class="nm">${esc(m.name)}</div><div class="sb">${esc(m.title)} · ${esc(m.coName)}</div></div></div>
+  ${spark(m.trend)}
+  <div class="mcard-bot">${pill(m.score)}${trendTxt(m.delta)}<span class="sb" style="margin-left:auto;font-size:.74rem;font-family:var(--mono)">${m.n} REVIEWS</span></div></a>`;
+
+/* ---- views ---- */
+function vHome(){
+  mount('t-home');
+  bindSearch($('#bigSearch'),$('#bigDD'));
+  $('#bigGo').addEventListener('click',()=>{const q=$('#bigSearch').value.trim();if(q)location.hash='#/search?q='+encodeURIComponent(q);});
+  $$('.try button').forEach(b=>b.addEventListener('click',()=>{const i=$('#bigSearch');i.value=b.dataset.q;i.focus();i.dispatchEvent(new Event('input'));}));
+  const imp=[...DB.managers].sort((a,b)=>b.delta-a.delta).slice(0,3);
+  const und=[...DB.managers].filter(m=>m.score<.7).sort((a,b)=>a.score-b.score).slice(0,3);
+  $('#homeImproved').innerHTML=imp.map(mgrCard).join('');
+  $('#homeUnder').innerHTML=und.map(mgrCard).join('');
+  $$('.hero-stats .n').forEach(el=>{const end=+el.dataset.count,dec=+(el.dataset.dec||0),suf=el.dataset.suffix||'',o={v:0};
+    gsap.to(o,{v:end,duration:1.6,delay:.4,ease:'power2.out',onUpdate:()=>el.textContent=o.v.toFixed(dec)+suf});});
+  startStream();
+}
+function vResults(q){
+  mount('t-results');
+  const {m,c}=searchAll(q||'');
+  const all=q? m.length+c.length : DB.managers.length+DB.companies.length;
+  $('#resTitle').textContent=q?`“${q}”`:'Browse everything';
+  $('#resSub').textContent=q?`${m.length} manager${m.length!==1?'s':''} · ${c.length} compan${c.length!==1?'ies':'y'}`:`${DB.managers.length} managers · ${DB.companies.length} companies on file`;
+  const M=q?m:[...DB.managers].sort((a,b)=>b.n-a.n), C=q?c:DB.companies;
+  const render=t=>{
+    let h='';
+    if((t==='all'||t==='m')){h+=M.map(x=>`<a class="resrow card" href="#/m/${x.id}">${avatar(x.name,46)}<div><div class="nm">${esc(x.name)}</div><div class="sb">${esc(x.title)} · ${esc(x.coName)} · ${esc(x.city)}</div></div><div class="end">${spark(x.trend,110,32)}${pill(x.score)}</div></a>`).join('');}
+    if((t==='all'||t==='c')){h+=C.map(x=>{const ms=DB.managers.filter(mm=>mm.co===x.id);const avg=ms.length?ms.reduce((s,mm)=>s+mm.score,0)/ms.length:0;
+      return `<a class="resrow card" href="#/c/${x.id}">${avatar(x.name,46)}<div><div class="nm">${esc(x.name)}</div><div class="sb">${esc(x.industry)} · ${esc(x.city)}</div></div><div class="end"><span class="scorepill sp-amber">${ms.length} MANAGERS</span>${ms.length?pill(avg):''}</div></a>`;}).join('');}
+    if(!h)h=`<div class="noresult card"><h2>No file yet</h2><p>Nobody has registered “${esc(q)}”. Fix that — anonymously.</p><a class="btn lg green" href="#/add?name=${encodeURIComponent(q)}">+ Register this manager</a></div>`;
+    $('#resList').innerHTML=h;
+    if(!reduced)gsap.from($('#resList').children,{opacity:0,y:12,duration:.4,stagger:.05,ease:'power2.out'});
+  };
+  render('all');
+  $$('.tab').forEach(t=>t.addEventListener('click',()=>{$$('.tab').forEach(x=>x.classList.remove('on'));t.classList.add('on');render(t.dataset.t);}));
+}
+function vManager(id){
+  const m=DB.managers.find(x=>x.id===id);
+  if(!m){location.hash='#/search';return;}
+  app.innerHTML=`<div class="wrap">
+    <div class="crumb vt"><a href="#/">Home</a> / <a href="#/c/${m.co}">${esc(m.coName)}</a> / <b>${esc(m.name)}</b></div>
+    <div class="pro-head card vt">
+      ${avatar(m.name,78,28)}
+      <div class="nm"><h1>${esc(m.name)}</h1><div class="sb">${esc(m.title)} · <a href="#/c/${m.co}">${esc(m.coName)}</a> · ${esc(m.city)}</div>
+        <div class="badges">${m.plan?'<span class="stamp st-amber">IMPROVEMENT PLAN ON FILE</span>':'<span class="stamp st-red">NO PLAN FILED</span>'}${m.delta>=.1?'<span class="stamp st-green">MOST IMPROVED</span>':''}${m.id==='preg'?'<span class="stamp st-red">WORST MANAGER EVER · CLASS OF 2011</span>':''}</div>
+        <div style="margin-top:12px;display:flex;gap:9px;flex-wrap:wrap"><a class="btn red" href="#/assess/${m.id}">Rate ${esc(m.name.split(' ')[0])} anonymously</a><a class="btn ghost" href="#/assess/${m.id}?self=1">I'm ${esc(m.name.split(' ')[0])} — take the test, get my report</a></div></div>
+      <div class="ringwrap"><div class="ring">${ringSVG(m.score)}<div class="rv"><b id="ringNum">0.00</b><span>EFFECTIVENESS</span></div></div>
+        <div class="ring-meta">${m.n} REVIEWS · 12 MO<br>TREND <b>${m.delta>=0?'+':''}${m.delta.toFixed(2)}</b> / 8Q<br>BAND <b style="color:${bandColor(m.score)}">${band(m.score)[0].toUpperCase()}</b>${m.streak?`<br>PRAISE STREAK <b>${m.streak} WKS</b>`:''}</div></div>
+    </div>
+    <div class="grid2">
+      <div class="panel card vt"><h3>The perception gap</h3><div class="ph">TEAM ASSESSMENT VS SELF-ASSESSMENT · 8 CATEGORIES</div>
+        <svg id="pRadar" width="100%"></svg>
+        <div class="legend"><span><i style="background:#149E7A"></i>Team rates them</span><span><i style="background:#E2474B"></i>They rate themselves</span></div>
+        <div class="callout" id="gapCall"></div></div>
+      <div class="panel card vt"><h3>The trajectory</h3><div class="ph">OVERALL EFFECTIVENESS · TRAILING 8 QUARTERS · RECENCY-WEIGHTED</div>
+        <svg id="pArc" width="100%"></svg>
+        <div class="ph" style="margin:10px 0 0">BANDS: <span style="color:#E2474B">&lt;.70 NEEDS IMPROVEMENT</span> · <span style="color:#C99207">.70–.80 WITHIN REQUIREMENTS</span> · <span style="color:#149E7A">&gt;.80 EXCEEDING</span></div></div>
+    </div>
+    <div class="grid2" style="margin-top:18px">
+      <div class="panel card vt"><h3>Behavior flags</h3><div class="ph">FROM FILED REVIEWS · DECAYS AFTER 24 MONTHS</div><div id="pBars"></div></div>
+      <div class="panel card vt"><h3>Right of reply</h3><div class="ph">MANAGER RESPONSE · PUBLIC</div>
+        ${m.reply?`<p class="reply">“${esc(m.reply)}”</p>`:`<p style="color:var(--soft);font-size:.92rem;margin-bottom:14px">No response on record. This profile was registered anonymously and is unclaimed — silence is also data.</p><span class="stamp st-red">UNCLAIMED PROFILE</span>`}
+        ${m.plan?`<div class="planline">Plan: weekly 1:1s · idea-loop board live · praise-in-public streak: <b>${m.streak} weeks</b> · next 360 window opens <b>JUL 01</b></div>`:''}</div>
+    </div>
+    <div class="panel card vt" style="margin-top:18px"><h3>What reviewers filed</h3><div class="ph">BEHAVIORS + REQUIRED “WHAT WOULD HELP” · NO RANT BOX EXISTS</div>
+      <div class="reviews">${m.reviews.map(r=>`<div class="review"><div class="rh"><span>★ ANONYMOUS</span><span>·</span><span>${r.when}</span></div><div class="tags">${r.tags.map(t=>`<span class="tag">${esc(t)}</span>`).join('')}${r.helps.map(t=>`<span class="tag help">↗ ${esc(t)}</span>`).join('')}</div><p>“${esc(r.quote)}”</p></div>`).join('')}</div></div>
+    <div class="pro-cta vt"><a class="btn lg red" href="#/assess/${m.id}">Rate ${esc(m.name.split(' ')[0])} — take the MTS-360</a><a class="btn lg ghost" href="#/assess/${m.id}?self=1">Are you ${esc(m.name.split(' ')[0])}? Self-assess → get your report</a><a class="btn lg ghost" href="#/c/${m.co}">All managers at ${esc(m.coName)}</a></div>
+  </div>`;
+  mountInline();
+  drawRadar($('#pRadar'),m.cats.team,m.cats.self);
+  drawArc($('#pArc'),m.trend);
+  drawBars($('#pBars'),m.behaviors);
+  const gaps=CATS.map((c,i)=>({c,d:m.cats.self[i]-m.cats.team[i],t:m.cats.team[i]})).sort((a,b)=>Math.abs(b.d)-Math.abs(a.d));
+  const g=gaps[0], low=[...CATS.map((c,i)=>({c,v:m.cats.team[i]}))].sort((a,b)=>a.v-b.v)[0];
+  $('#gapCall').innerHTML=`Biggest blind spot: <b class="bad">${g.c}</b> — self ${(m.cats.self[CATS.indexOf(g.c)]).toFixed(2)} vs team ${(g.t).toFixed(2)} (${g.d>0?'over':'under'}rates by ${Math.abs(g.d*100).toFixed(0)} pts). Lowest team score: <b class="bad">${low.c} at ${low.v.toFixed(2)}</b>${low.v<.7?' — needs-improvement territory':''}. That gap is the curriculum.`;
+  const o={v:0};gsap.to(o,{v:m.score,duration:1.4,ease:'power2.out',onUpdate:()=>$('#ringNum').textContent=o.v.toFixed(2)});
+  const fg=$('.ringFG');gsap.to(fg,{strokeDashoffset:fg.dataset.off,duration:1.4,ease:'power2.out'});
+}
+function vCompany(id){
+  const c=DB.companies.find(x=>x.id===id);
+  if(!c){location.hash='#/search';return;}
+  const ms=DB.managers.filter(m=>m.co===id).sort((a,b)=>b.score-a.score);
+  const avg=ms.length?ms.reduce((s,m)=>s+m.score,0)/ms.length:0;
+  const improving=ms.filter(m=>m.delta>0).length;
+  app.innerHTML=`<div class="wrap">
+    <div class="crumb vt"><a href="#/">Home</a> / <b>${esc(c.name)}</b></div>
+    <div class="pro-head card vt">${avatar(c.name,78,28)}
+      <div class="nm"><h1>${esc(c.name)}</h1><div class="sb">${esc(c.industry)} · ${esc(c.city)}</div>
+      <div class="badges"><span class="stamp ${improving>=ms.length/2?'st-green':'st-red'}">${improving}/${ms.length} MANAGERS IMPROVING</span></div></div>
+      <div class="ringwrap"><div class="ring">${ringSVG(avg)}<div class="rv"><b>${avg.toFixed(2)}</b><span>COMPANY AVG</span></div></div>
+      <div class="ring-meta">${ms.length} MANAGERS ON FILE<br>${ms.reduce((s,m)=>s+m.n,0)} TOTAL REVIEWS<br>CANDIDATE VERDICT<br><b style="color:${bandColor(avg)}">${avg>=.78?'SIGN':avg>=.65?'NEGOTIATE':'EYES OPEN'}</b></div></div></div>
+    <div class="homesec-h vt" style="margin-top:26px"><h2>Managers on file</h2></div>
+    <div class="co-mgrlist">${ms.map(m=>`<a class="resrow card vt" href="#/m/${m.id}">${avatar(m.name,46)}<div><div class="nm">${esc(m.name)}</div><div class="sb">${esc(m.title)} · ${m.n} reviews ${m.plan?'· improvement plan on file':'· no plan filed'}</div></div><div class="end">${spark(m.trend,110,32)}${pill(m.score)}${trendTxt(m.delta)}</div></a>`).join('')}</div>
+    <div class="pro-cta vt"><a class="btn lg red" href="#/assess">Rate a manager here</a><a class="btn lg ghost" href="#/add">+ Add a manager at ${esc(c.name)}</a></div></div>`;
+  mountInline();
+  const fg=$('.ringFG');gsap.to(fg,{strokeDashoffset:fg.dataset.off,duration:1.4,ease:'power2.out'});
+}
+function vAdd(params){
+  mount('t-add');
+  if(params.get('name'))$('#aName').value=params.get('name');
+  $('#aSubmit').addEventListener('click',async ()=>{
+    const name=$('#aName').value.trim(), coN=$('#aCo').value.trim();
+    if(!name||!coN){gsap.fromTo('.addcard',{x:-7},{x:0,duration:.45,ease:'elastic.out(1,.3)'});return;}
+    if(demoMode){
+      let co=DB.companies.find(c=>c.name.toLowerCase()===coN.toLowerCase());
+      if(!co){co={id:'c'+Date.now(),name:coN,industry:'Unverified',city:$('#aCity').value.trim()||'—'};DB.companies.push(co);}
+      const m={id:'m'+Date.now(),name,co:co.id,coName:co.name,title:$('#aTitle').value.trim()||'Manager',dept:'—',city:co.city,
+        score:0,delta:0,n:0,trend:[],plan:false,streak:0,cats:{team:null,self:null},behaviors:[],reply:null,reviews:[]};
+      DB.managers.push(m);
+      location.hash='#/assess/'+m.id; return;
+    }
+    $('#aSubmit').disabled=true;
+    try{
+      const d=await api('/managers',{name,company:coN,title:$('#aTitle').value.trim(),city:$('#aCity').value.trim()});
+      absorbCompany(d.company); absorbManager(d.manager);
+      location.hash='#/assess/'+d.manager.id;
+    }catch(e){
+      $('#aSubmit').disabled=false;
+      $('#aSubmit').textContent='Failed — try again';
+      gsap.fromTo('.addcard',{x:-7},{x:0,duration:.45,ease:'elastic.out(1,.3)'});
+    }
+  });
+}
+
+/* ---- assessment engine ---- */
+const A={mode:null,persp:'team',target:null,steps:[],step:0,ans:{}};
+function buildSteps(mode){
+  const byCat={};
+  BANK.forEach(s=>{(byCat[s.cat]=byCat[s.cat]||[]).push(mode==='quick'?{...s,qs:[s.qs[0]]}:s);});
+  return CATS.map(c=>({cat:c,subs:byCat[c]}));
+}
+function qid(si,bi,qi){return `${si}_${bi}_${qi}`;}
+function vAssessPick(id,params){
+  mount('t-assess-pick');
+  A.target=id?DB.managers.find(m=>m.id===id):null;
+  A.persp=(params&&params.get('self')==='1')?'self':'team';
+  if(A.target){$('#apFor').textContent=' — '+A.target.name;$('#apCrumb').textContent=A.target.name;}
+  const sync=()=>{
+    $('#perspTeam').classList.toggle('on',A.persp==='team');
+    $('#perspSelf').classList.toggle('on',A.persp==='self');
+    $('#apWhoLabel').textContent=A.persp==='self'?'Which manager are you?':'Who is this assessment about?';
+    if(A.persp==='self'&&A.target)$('#apFor').textContent=' — '+A.target.name+' (self)';
+    else if(A.target)$('#apFor').textContent=' — '+A.target.name;
+    else $('#apFor').textContent='';
+  };
+  $('#perspTeam').addEventListener('click',()=>{A.persp='team';sync();});
+  $('#perspSelf').addEventListener('click',()=>{A.persp='self';sync();});
+  $('#mgrList').innerHTML=DB.managers.map(x=>`<option value="${esc(x.name)}">${esc(x.title)} · ${esc(x.coName)}</option>`).join('');
+  const who=$('#apWho'), whoStatus=$('#apWhoStatus');
+  const setTarget=t=>{A.target=t;
+    if(t){whoStatus.innerHTML=`✓ ATTACHED: <b>${esc(t.name)}</b> · ${esc(t.coName)} — ${A.persp==='self'?'your report & plan publish to this profile':'your rating files to this profile'}`;whoStatus.style.color='var(--green)';}
+    else{whoStatus.textContent='Not attached yet — you can still take it, but results won\'t file to a profile.';whoStatus.style.color='var(--soft)';}
+    sync();};
+  if(A.target)who.value=A.target.name;
+  who.addEventListener('input',()=>{const v=who.value.trim().toLowerCase();
+    setTarget(DB.managers.find(x=>x.name.toLowerCase()===v)||null);});
+  setTarget(A.target);
+  $$('.mode').forEach(b=>b.addEventListener('click',()=>{
+    A.mode=b.dataset.mode;A.steps=buildSteps(A.mode);A.step=0;A.ans={};
+    renderStep();
+  }));
+}
+function threadQ(t){
+  if(!A.target||A.persp==='self')return t;
+  const f=A.target.name.split(' ')[0];
+  if(t.startsWith('Overall, '))return 'Overall, '+f+' '+t.slice(9);
+  return f+' '+t.charAt(0).toLowerCase()+t.slice(1);
+}
+function liveScores(si){
+  let on=0,od=0,cn=0,cd=0;
+  Object.entries(A.ans).forEach(([k,a])=>{if(!a.e)return;
+    on+=a.e*a.i;od+=5*a.i;
+    if(+k.split('_')[0]===si){cn+=a.e*a.i;cd+=5*a.i;}});
+  return {overall:od?on/od:null,cat:cd?cn/cd:null};
+}
+function updateLive(si){
+  const {overall,cat}=liveScores(si);
+  const ov=$('#liveOverall'),cv=$('#liveCat');
+  const set=(el,v)=>{if(!el)return;el.textContent=v==null?'—':v.toFixed(2);el.style.color=v==null?'#9FB0C6':(v>=.8?'#4ED4AC':v>=.7?'#F0B429':'#FF7A7E');
+    if(v!=null&&!reduced)gsap.fromTo(el,{scale:1.18},{scale:1,duration:.3,ease:'back.out(2)'});};
+  set(ov,overall);set(cv,cat);
+}
+function itemChip(row,id){
+  const chip=$('.qscore',row), a=A.ans[id];
+  if(!a||!a.e){chip.textContent='— · unanswered';chip.className='qscore';return;}
+  const v=a.e/5,[bt,bc]=band(v);
+  chip.textContent=`E${a.e}×I${a.i} → ${v.toFixed(2)} · ${bt.toUpperCase()}`;
+  chip.className='qscore '+bc;
+  if(!reduced)gsap.fromTo(chip,{scale:.85},{scale:1,duration:.3,ease:'back.out(2.5)'});
+}
+function renderStep(){
+  mount('t-assess-run');
+  const s=A.steps[A.step], si=A.step;
+  const total=A.steps.reduce((t,st)=>t+st.subs.reduce((tt,b)=>tt+b.qs.length,0),0);
+  const done=Object.keys(A.ans).length;
+  /* identity strip: the manager is threaded through every step */
+  const strip=$('#whoStrip');
+  const live=`<div class="livechips"><div class="lc"><div class="lcv" id="liveOverall">—</div><div class="lcl">RUNNING OVERALL</div></div><div class="lc"><div class="lcv" id="liveCat">—</div><div class="lcl">THIS CATEGORY</div></div></div>`;
+  if(A.target){
+    strip.innerHTML=`${avatar(A.target.name,40)}<div><div class="wnm">${esc(A.target.name)}</div><div class="wsb">${A.persp==='self'?'SELF-ASSESSMENT — RATE YOURSELF HONESTLY':'YOU ARE ASSESSING'} · ${esc(A.target.title)}, ${esc(A.target.coName)}</div></div>${live}`;
+  } else {
+    strip.innerHTML=`<div><div class="wnm">Unattached practice run</div><div class="wsb">RESULTS WON'T FILE TO A PROFILE — GO BACK TO ATTACH A MANAGER</div></div>${live}`;
+  }
+  $('#pStep').textContent=`${si+1} / ${A.steps.length} · ${s.cat.toUpperCase()}`;
+  $('#pPct').textContent=Math.round(done/total*100)+'%';
+  $('#pFill').style.width=(done/total*100)+'%';
+  if(A.persp==='self')$('#scaleKey').innerHTML='<b>SELF-ASSESSMENT</b> — rate what you actually do, not what you intend; the report is only as honest as you are. · <b>EXTENT</b> 1 not at all → 5 very great extent — <b>5 is always the good end</b> · <b>IMPORTANCE</b> defaults to 3 · scoring is live above';
+  let h=`<div class="qcat vt"><h2>${s.cat}</h2><div class="catsub">${s.subs.reduce((t,b)=>t+b.qs.length,0)} ITEMS · CATEGORY ${si+1} OF ${A.steps.length}${A.target?' · SUBJECT: '+esc(A.target.name.toUpperCase()):''}</div></div>`;
+  s.subs.forEach((b,bi)=>{
+    if(A.mode==='full')h+=`<div class="subhead vt">${b.sub}</div>`;
+    b.qs.forEach((q,qi)=>{
+      const id=qid(si,bi,qi), a=A.ans[id]||{};
+      h+=`<div class="qrow vt" data-id="${id}"><div class="qt">${esc(threadQ(q[0]))}</div>
+        <div class="qx"><b>WHAT A 5 LOOKS LIKE</b>${esc(q[1])}</div>
+        <div class="controls">
+        <div><div class="seg">${[1,2,3,4,5].map(v=>`<button data-v="${v}" class="${a.e===v?'on':''}" aria-label="extent ${v}">${v}</button>`).join('')}</div><div class="seg-l"><span>NOT AT ALL</span><span>VERY GREAT EXTENT</span></div></div>
+        <div class="impwrap"><span class="il">IMPORTANCE</span><div class="imp"><button data-d="-1" aria-label="less important">−</button><b>${a.i||3}</b><button data-d="1" aria-label="more important">+</button></div></div>
+        <span class="qscore">— · unanswered</span>
+      </div></div>`;});
+  });
+  $('#stepHost').innerHTML=h;
+  showVt($('#stepHost'));
+  $$('.qrow').forEach(row=>{
+    const id=row.dataset.id;
+    if(A.ans[id]&&A.ans[id].e)itemChip(row,id);
+    $$('.seg button',row).forEach(b=>b.addEventListener('click',()=>{
+      A.ans[id]={...(A.ans[id]||{i:3}),e:+b.dataset.v,i:(A.ans[id]&&A.ans[id].i)||3};
+      $$('.seg button',row).forEach(x=>x.classList.toggle('on',x===b));
+      gsap.fromTo(b,{scale:.85},{scale:1.06,duration:.25,ease:'back.out(3)'});
+      itemChip(row,id); updateLive(si);
+      const t2=A.steps.reduce((t,st)=>t+st.subs.reduce((tt,bb)=>tt+bb.qs.length,0),0);
+      $('#pFill').style.width=(Object.keys(A.ans).length/t2*100)+'%';
+      $('#pPct').textContent=Math.round(Object.keys(A.ans).length/t2*100)+'%';
+      $('#stepErr').classList.add('hide');
+    }));
+    $$('.imp button',row).forEach(b=>b.addEventListener('click',()=>{
+      const cur=A.ans[id]||{i:3};cur.i=Math.min(5,Math.max(1,(cur.i||3)+(+b.dataset.d)));A.ans[id]=cur;
+      $('b',$('.imp',row)).textContent=cur.i;
+      itemChip(row,id); updateLive(si);
+    }));
+  });
+  updateLive(si);
+  $('#backBtn').addEventListener('click',()=>{if(A.step>0){A.step--;renderStep();}else vAssessPick(A.target&&A.target.id,new URLSearchParams(A.persp==='self'?'self=1':''));});
+  $('#nextBtn').textContent=A.step===A.steps.length-1?'See the score →':'Next category →';
+  $('#nextBtn').addEventListener('click',()=>{
+    const need=s.subs.reduce((t,b)=>t+b.qs.length,0);
+    const have=s.subs.reduce((t,b,bi)=>t+b.qs.filter((_,qi)=>A.ans[qid(si,bi,qi)]&&A.ans[qid(si,bi,qi)].e).length,0);
+    if(have<need){$('#stepErr').classList.remove('hide');
+      const miss=$$('.qrow').find(r=>!(A.ans[r.dataset.id]&&A.ans[r.dataset.id].e));
+      if(miss){miss.scrollIntoView({behavior:'smooth',block:'center'});gsap.fromTo(miss,{x:-7},{x:0,duration:.5,ease:'elastic.out(1,.3)'});}
+      return;}
+    if(A.step<A.steps.length-1){A.step++;renderStep();}
+    else renderDone();
+  });
+}
+function renderDone(){
+  const perCat={}, perSub=[];
+  A.steps.forEach((s,si)=>{let num=0,den=0;
+    s.subs.forEach((b,bi)=>{let sn=0,sd=0;
+      b.qs.forEach((_,qi)=>{const a=A.ans[qid(si,bi,qi)];if(a&&a.e){num+=a.e*a.i;den+=5*a.i;sn+=a.e*a.i;sd+=5*a.i;}});
+      if(sd)perSub.push({sub:b.sub,cat:s.cat,v:sn/sd});});
+    perCat[s.cat]=den?num/den:0;});
+  const vals=CATS.map(c=>perCat[c]);
+  const overall=(()=>{let n=0,d=0;A.steps.forEach((s,si)=>s.subs.forEach((b,bi)=>b.qs.forEach((_,qi)=>{const a=A.ans[qid(si,bi,qi)];if(a&&a.e){n+=a.e*a.i;d+=5*a.i;}})));return n/d;})();
+  if(A.persp==='self')return renderReport(overall,vals,perSub);
+  mount('t-assess-done');
+  const [bt,bc]=band(overall);
+  $('#finalBand').innerHTML=`<span class="scorepill ${bc}" style="font-size:.92rem;padding:6px 14px">${bt.toUpperCase()}</span>`;
+  $('#finalNote').textContent=A.target?`Filed against ${A.target.name} (${A.target.coName}) once you submit below. Recency-weighted into their public trajectory.`:'Pick a manager from search to file this against a real profile.';
+  const o={v:0},el=$('#finalScore');
+  gsap.to(o,{v:overall,duration:1.6,ease:'power2.out',onUpdate:()=>{el.textContent=o.v.toFixed(3);el.style.color=bandColor(o.v);}});
+  $('#catLines').innerHTML=CATS.map((c,i)=>`<div class="catline"><div class="cl">${c}</div><div class="bartrack"><div class="barfill" data-w="${(vals[i]*100).toFixed(1)}" style="background:${bandColor(vals[i])}"></div></div><div class="cv">${vals[i].toFixed(2)}</div></div>`).join('');
+  $$('#catLines .barfill').forEach((b,i)=>gsap.to(b,{width:b.dataset.w+'%',duration:1,delay:.2+i*.08,ease:'power3.out'}));
+  $$('#helpChips .chip').forEach(c=>c.addEventListener('click',()=>{c.classList.toggle('on');gsap.fromTo(c,{scale:.92},{scale:1,duration:.3,ease:'back.out(3)'});}));
+  $('#fileBtn').addEventListener('click',()=>{
+    if(!$$('#helpChips .chip.on').length){gsap.fromTo('#helpChips',{x:-7},{x:0,duration:.5,ease:'elastic.out(1,.3)'});return;}
+    const id='ANON-'+Array.from(crypto.getRandomValues(new Uint8Array(4))).map(b=>'0123456789ABCDEFGHJKMNPQRSTVWXYZ'[b%32]).join('');
+    $('#anonId').textContent=id;
+    $('#hashLine').textContent='reviewer hash sha256:'+Array.from(crypto.getRandomValues(new Uint8Array(8))).map(b=>b.toString(16).padStart(2,'0')).join('')+'… · identity discarded · decays JUN 2028';
+    const st=$('#filedStamp');st.style.display='inline-block';
+    gsap.fromTo(st,{scale:2.2,opacity:0,rotate:-13},{scale:1,opacity:1,rotate:-3,duration:.55,ease:'back.out(2.2)'});
+    if(A.target&&demoMode){const m=A.target;
+      m.n++; m.trend=(m.trend.length?m.trend.slice(1):[]).concat([+( (m.score? m.score*.7:0) + overall*( m.score?.3:1)).toFixed(2)]);
+      while(m.trend.length<2)m.trend.unshift(+(overall*.92).toFixed(2));
+      const old=m.score||overall; m.score=+((m.score? old*.7+overall*.3 : overall)).toFixed(3); m.delta=+(m.score-old+(m.delta||0)*.5).toFixed(2);
+      m.cats.team=m.cats.team?m.cats.team.map((v,i)=>+(v*.7+vals[i]*.3).toFixed(3)):vals.map(v=>+v.toFixed(3));
+      m.reviews.unshift({when:'JUN 2026',tags:[],helps:$$('#helpChips .chip.on').map(c=>c.textContent),quote:'Filed via MTS-360 '+(A.mode==='full'?'(full, 110 items)':'(quick read)')+'.'});
+      $('#fileBtn').disabled=true;
+      setTimeout(()=>location.hash='#/m/'+A.target.id,1600);}
+    else if(A.target){
+      $('#fileBtn').disabled=true;
+      api('/managers/'+A.target.id+'/assessments',{perspective:'team',mode:A.mode,answers:A.ans,
+        helps:$$('#helpChips .chip.on').map(c=>c.textContent)})
+      .then(d=>{absorbManager(d.manager);
+        $('#anonId').textContent=d.anon_id;
+        $('#hashLine').textContent='reviewer hash stored one-way · identity discarded · decays '+d.decays;
+        setTimeout(()=>location.hash='#/m/'+A.target.id,1400);})
+      .catch(e=>{$('#fileBtn').disabled=false;$('#filedStamp').style.display='none';
+        $('#hashLine').textContent='⚠ '+e.message;
+        gsap.fromTo('#hashLine',{x:-7},{x:0,duration:.5,ease:'elastic.out(1,.3)'});});}
+  });
+}
+
+/* ---- the improvement report (self-assessment) ---- */
+function renderReport(overall,vals,perSub){
+  mount('t-report');
+  const m=A.target, [bt,bc]=band(overall);
+  const today='JUN 12 2026', reassess='SEP 12 2026';
+  $('#rDate').textContent=today+' · '+(A.mode==='full'?'FULL 110-ITEM':'QUICK 19-ITEM');
+  $('#rName').textContent=m?m.name+' — improvement report':'Your improvement report';
+  $('#rSub').textContent=m?`${m.title} · ${m.coName} · self-assessed`:'Self-assessed · unattached to a profile';
+  $('#rBand').innerHTML=`<span class="scorepill ${bc}" style="font-size:.9rem;padding:5px 13px">${overall.toFixed(3)} · ${bt.toUpperCase()}</span>`;
+  $('#rRingHost').innerHTML=ringSVG(overall)+`<div class="rv"><b id="rRingNum">0.00</b><span>SELF</span></div>`;
+  const o={v:0};gsap.to(o,{v:overall,duration:1.4,ease:'power2.out',onUpdate:()=>$('#rRingNum').textContent=o.v.toFixed(2)});
+  const fg=$('.ringFG');gsap.to(fg,{strokeDashoffset:fg.dataset.off,duration:1.4,ease:'power2.out'});
+
+  /* blind spots vs team data */
+  let priority=perSub.map(s=>({...s}));
+  if(m&&m.cats.team){
+    const blind=CATS.map((c,i)=>({c,self:vals[i],team:m.cats.team[i],gap:vals[i]-m.cats.team[i]}))
+      .filter(x=>x.gap>=.08).sort((a,b)=>b.gap-a.gap);
+    if(blind.length){
+      $('#rGapHost').innerHTML=`<div class="blind vt"><b>⚠ Blind spots detected.</b> Your team scores you lower than you score yourself in ${blind.map(x=>`<b>${x.c}</b> (you ${x.self.toFixed(2)}, them ${x.team.toFixed(2)})`).join(', ')}. Where you and your team disagree, <b>their number is the one customers of your management experience</b> — those categories are weighted to the top of your prescription.</div>`;
+      priority=priority.map(s=>{const b=blind.find(x=>x.c===s.cat);return {...s,v:b?s.v-b.gap*.8:s.v};});
+      $('#rTeamLeg').classList.remove('hide');
+    } else {
+      $('#rGapHost').innerHTML=`<div class="blind vt" style="background:var(--green-wash);border-color:var(--green)"><b style="color:#0D7A5D">✓ No major blind spots.</b> Your self-assessment tracks your team's view within 8 points everywhere — rare, and the precondition for everything below working.</div>`;
+      $('#rTeamLeg').classList.remove('hide');
+    }
+  } else {
+    $('#rGapHost').innerHTML=`<div class="blind vt" style="background:var(--amber-wash);border-color:var(--amber)"><b style="color:#9A7117">No team data yet.</b> This report is your own mirror. The real instrument is the gap between this and what your team files — share your profile and ask them to rate you. Anonymously. That's the deal.</div>`;
+  }
+  drawRadar($('#rRadar'),vals,m&&m.cats.team?m.cats.team:null);
+  $('#rCats').innerHTML=CATS.map((c,i)=>`<div class="catline"><div class="cl">${c}</div><div class="bartrack"><div class="barfill" data-w="${(vals[i]*100).toFixed(1)}" style="background:${bandColor(vals[i])}"></div></div><div class="cv">${vals[i].toFixed(2)}</div></div>`).join('');
+  $$('#rCats .barfill').forEach((b,i)=>gsap.to(b,{width:b.dataset.w+'%',duration:1,delay:.2+i*.08,ease:'power3.out'}));
+
+  /* prescriptions: three weakest (blind-spot weighted) subscales */
+  const worst=[...priority].sort((a,b)=>a.v-b.v).slice(0,3);
+  $('#rRx').innerHTML=worst.map((s,i)=>{const rx=RX[s.sub]||{why:'',a:[],m:''};
+    const raw=perSub.find(x=>x.sub===s.sub);
+    return `<div class="rx card vt rank${i+1}"><div class="rx-h"><span class="scorepill ${band(raw.v)[1]}">${raw.v.toFixed(2)}</span><h4>${esc(s.sub)}</h4><span class="cat">${esc(s.cat)} · PRIORITY ${i+1}</span></div>
+      <p class="why">${esc(rx.why)}</p>
+      <ol>${rx.a.map(a=>`<li>${esc(a)}</li>`).join('')}</ol>
+      <div class="metric">MEASURE: ${esc(rx.m)}</div></div>`;}).join('');
+
+  /* 30/60/90 */
+  showVt($('#rGapHost'));showVt($('#rRx'));
+  const tl=[['30 DAYS','t30',worst.map(s=>(RX[s.sub]||{a:['—']}).a[0])],
+            ['60 DAYS','t60',worst.map(s=>(RX[s.sub]||{a:['','—']}).a[1])],
+            ['90 DAYS','t90',worst.map(s=>(RX[s.sub]||{a:['','','—']}).a[2]).concat(['Open the next 360 window — re-assessment '+reassess])]];
+  $('#rPlan').innerHTML=tl.map(([d,cls,items])=>`<div class="tl ${cls}"><div class="d">${d}</div><ul>${items.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>`).join('');
+
+  $('#printReport').addEventListener('click',()=>window.print());
+  $('#publishPlan').addEventListener('click',()=>{
+    if(m&&!demoMode){
+      $('#publishPlan').disabled=true;
+      api('/managers/'+m.id+'/assessments',{perspective:'self',mode:A.mode,answers:A.ans,
+        focus:worst.map(s=>s.sub)})
+      .then(d=>{absorbManager(d.manager);
+        $('#planDate').textContent=reassess;
+        const st=$('#planStamp');st.style.display='inline-block';
+        gsap.fromTo(st,{scale:2.2,opacity:0,rotate:-13},{scale:1,opacity:1,rotate:-3,duration:.55,ease:'back.out(2.2)'});
+        setTimeout(()=>location.hash='#/m/'+m.id,1700);})
+      .catch(e=>{$('#publishPlan').disabled=false;$('#publishPlan').textContent='⚠ '+e.message+' — retry';});
+    } else if(m){
+      m.cats.self=vals.map(v=>+v.toFixed(3));
+      if(!m.cats.team)m.cats.team=null;
+      m.plan=true;
+      m.reply=m.reply||('Self-assessed '+today+'. Plan published: '+worst.map(s=>s.sub).join(', ')+'. Re-assess me in 90 days.');
+      $('#planDate').textContent=reassess;
+      const st=$('#planStamp');st.style.display='inline-block';
+      gsap.fromTo(st,{scale:2.2,opacity:0,rotate:-13},{scale:1,opacity:1,rotate:-3,duration:.55,ease:'back.out(2.2)'});
+      $('#publishPlan').disabled=true;
+      setTimeout(()=>location.hash='#/m/'+m.id,1700);
+    } else {
+      $('#planDate').textContent=reassess;
+      const st=$('#planStamp');st.style.display='inline-block';
+      gsap.fromTo(st,{scale:2.2,opacity:0,rotate:-13},{scale:1,opacity:1,rotate:-3,duration:.55,ease:'back.out(2.2)'});
+    }
+  });
+}
+
+/* ---- inline mount animation for hand-built views ---- */
+function mountInline(){scrollTo(0,0);ScrollTrigger.getAll().forEach(s=>s.kill());
+  if(!reduced)gsap.to($$('.vt',app),{opacity:1,y:0,duration:.6,stagger:.06,ease:'power3.out'});
+  else $$('.vt',app).forEach(e=>{e.style.opacity=1;e.style.transform='none';});}
+
+/* ---- three.js ambient stream (home hero only) ---- */
+let streamRAF=null;
+function startStream(){
+  const canvas=$('#stream'); if(!canvas||!window.THREE)return;
+  const renderer=new THREE.WebGLRenderer({canvas,alpha:true,antialias:true});
+  renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+  const scene=new THREE.Scene();
+  const camera=new THREE.PerspectiveCamera(50,1,1,300); camera.position.set(0,0,70);
+  const cvs=document.createElement('canvas');cvs.width=cvs.height=64;
+  const g2=cvs.getContext('2d'),grd=g2.createRadialGradient(32,32,0,32,32,32);
+  grd.addColorStop(0,'rgba(255,255,255,1)');grd.addColorStop(.4,'rgba(255,255,255,.6)');grd.addColorStop(1,'rgba(255,255,255,0)');
+  g2.fillStyle=grd;g2.fillRect(0,0,64,64);
+  const tex=new THREE.CanvasTexture(cvs);
+  const N=750, geo=new THREE.BufferGeometry();
+  const pos=new Float32Array(N*3), col=new Float32Array(N*3);
+  const u0=new Float32Array(N), spd=new Float32Array(N), off=new Float32Array(N), zz=new Float32Array(N);
+  for(let i=0;i<N;i++){u0[i]=Math.random();spd[i]=.022+Math.random()*.03;off[i]=Math.random()*Math.PI*2;zz[i]=(Math.random()-.5)*22;}
+  geo.setAttribute('position',new THREE.BufferAttribute(pos,3));
+  geo.setAttribute('color',new THREE.BufferAttribute(col,3));
+  const mat=new THREE.PointsMaterial({size:2.4,map:tex,vertexColors:true,transparent:true,opacity:.5,depthWrite:false});
+  const pts=new THREE.Points(geo,mat); scene.add(pts);
+  const RED=new THREE.Color(0xE2474B),AMB=new THREE.Color(0xF0B429),GRN=new THREE.Color(0x149E7A),tmp=new THREE.Color();
+  let mx=0,my=0; const pm=e=>{mx=(e.clientX/innerWidth-.5)*2;my=(e.clientY/innerHeight-.5)*2;};
+  addEventListener('pointermove',pm);
+  function size(){const w=canvas.clientWidth||innerWidth,h=canvas.clientHeight||600;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();}
+  size();addEventListener('resize',size);
+  const clock=new THREE.Clock();
+  function frame(){
+    if(!document.body.contains(canvas)){cancelAnimationFrame(streamRAF);removeEventListener('pointermove',pm);return;}
+    const t=clock.getElapsedTime();
+    for(let i=0;i<N;i++){const u=(u0[i]+t*spd[i])%1,j=i*3;
+      pos[j]=-62+124*u;
+      pos[j+1]=6-50*u+56*u*u + Math.sin(off[i]+t*.7+u*9)*2.2 - 8;
+      pos[j+2]=zz[i];
+      if(u<.5)tmp.copy(RED).lerp(AMB,u/.5);else tmp.copy(AMB).lerp(GRN,(u-.5)/.5);
+      col[j]=tmp.r;col[j+1]=tmp.g;col[j+2]=tmp.b;}
+    geo.attributes.position.needsUpdate=true;geo.attributes.color.needsUpdate=true;
+    pts.rotation.y=mx*.06; pts.position.y=-my*2;
+    renderer.render(scene,camera);
+    if(!reduced)streamRAF=requestAnimationFrame(frame);
+  }
+  if(reduced){const t=1;for(let i=0;i<N;i++){const u=u0[i],j=i*3;pos[j]=-62+124*u;pos[j+1]=6-50*u+56*u*u-8;pos[j+2]=zz[i];
+    if(u<.5)tmp.copy(RED).lerp(AMB,u/.5);else tmp.copy(AMB).lerp(GRN,(u-.5)/.5);col[j]=tmp.r;col[j+1]=tmp.g;col[j+2]=tmp.b;}
+    geo.attributes.position.needsUpdate=true;geo.attributes.color.needsUpdate=true;renderer.render(scene,camera);}
+  else frame();
+}
+
+/* ---- router ---- */
+function route(){
+  const h=location.hash||'#/';
+  const [path,qs]=h.slice(2).split('?');
+  const params=new URLSearchParams(qs||'');
+  const seg=path.split('/').filter(Boolean);
+  if(!seg.length)return vHome();
+  if(seg[0]==='search')return vResults(params.get('q')||'');
+  if(seg[0]==='m')return vManager(seg[1]);
+  if(seg[0]==='c')return vCompany(seg[1]);
+  if(seg[0]==='add')return vAdd(params);
+  if(seg[0]==='assess')return vAssessPick(seg[1],params);
+  vHome();
+}
+addEventListener('hashchange',route);
+(async function boot(){
+  try{
+    const ctl=new AbortController(); const t=setTimeout(()=>ctl.abort(),3500);
+    const r=await fetch('/api/bootstrap',{signal:ctl.signal}); clearTimeout(t);
+    const j=await r.json();
+    if(!j.success)throw 0;
+    DB.companies=j.data.companies; DB.managers=j.data.managers;
+  }catch(_){
+    DB.companies=SEED.companies; DB.managers=SEED.managers; demoMode=true;
+    console.info('MTS: no backend reachable — running in demo mode (in-memory).');
+  }
+  route();
+})();
+</script>
+</body>
+</html>
