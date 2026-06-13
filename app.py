@@ -34,8 +34,12 @@ def create_app():
 
     db.init_app(app)
     with app.app_context():
-        db.create_all()
-        seed_if_empty(db)
+        try:
+            db.create_all()
+            seed_if_empty(db)
+        except Exception:
+            # another worker/instance won the init race — schema already exists
+            db.session.rollback()
 
     # ---------- helpers ----------
     def reviewer_hash():
