@@ -159,6 +159,15 @@ def create_app():
                    'anon_id': 'ANON-' + rh[:6].upper(),
                    'decays': a.decays_at.strftime('%b %Y').upper()}, 201)
 
+    # Public crawler files use real root URLs, separate from hash navigation.
+    @app.get('/robots.txt')
+    def robots():
+        return send_from_directory(app.static_folder, 'robots.txt', mimetype='text/plain')
+
+    @app.get('/sitemap.xml')
+    def sitemap():
+        return send_from_directory(app.static_folder, 'sitemap.xml', mimetype='application/xml')
+
     # ---------- SPA ----------
     @app.get('/')
     def index():

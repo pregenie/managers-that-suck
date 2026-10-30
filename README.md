@@ -102,3 +102,7 @@ Caddy/compose aren't used on Render — it terminates HTTPS for you.
   match) before self-assessments can publish.
 - Postgres row-level security and a read-only candidate API are the next
   hardening steps when traffic justifies them.
+
+## Search discovery
+
+The public `/robots.txt` points to `/sitemap.xml`. The sitemap lists the canonical homepage; the app’s `#/` views are browser fragments, not separate crawlable page URLs.
